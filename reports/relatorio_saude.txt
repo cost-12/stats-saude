@@ -1,0 +1,178 @@
+========================================================================
+RELATORIO DA DASHBOARD DE SAUDE
+========================================================================
+Gerado em: 28/06/2026 04:24
+Base analisada: C:\Users\Thiago Silva Costa\Desktop\stats-saude\data\08_saude.csv
+
+Observacao: classificacoes de disponibilidade sao operacionais para analise exploratoria
+e nao substituem parametros oficiais de saude publica.
+
+=== Analise exploratoria dos dados ===
+Quantidade de registros: 200
+Quantidade de colunas: 16
+
+Municipios repetidos: 0
+
+Valores ausentes por coluna:
+- municipio: 0
+- ubs: 0
+- medicos: 0
+- enfermeiros: 0
+- populacao_atendida: 0
+- total_profissionais: 0
+- profissionais_por_ubs: 0
+- medicos_por_10k: 0
+- enfermeiros_por_10k: 0
+- profissionais_por_10k: 0
+- habitantes_por_ubs: 0
+- habitantes_por_medico: 0
+- habitantes_por_profissional: 0
+- faixa_populacao: 0
+- nivel_ubs: 0
+- nivel_medicos_10k: 0
+
+Colunas numericas e intervalos:
+- ubs: minimo 1, maximo 30, media 15,97
+- medicos: minimo 1, maximo 100, media 52,43
+- enfermeiros: minimo 2, maximo 150, media 75,03
+- populacao_atendida: minimo 2.852, maximo 298.293, media 148.665,70
+- total_profissionais: minimo 19, maximo 250, media 127,47
+- profissionais_por_ubs: minimo 0,68, maximo 102,00, media 13,02
+- medicos_por_10k: minimo 0,08, maximo 212,43, media 11,35
+- enfermeiros_por_10k: minimo 0,13, maximo 196,96, media 13,21
+- profissionais_por_10k: minimo 1,20, maximo 365,45, media 24,56
+- habitantes_por_ubs: minimo 98,34, maximo 150.150,00, media 15.815,64
+- habitantes_por_medico: minimo 47,07, maximo 125.716,00, media 7.364,10
+- habitantes_por_profissional: minimo 27,36, maximo 8.300,97, media 1.516,22
+
+Filtros recomendados para a dashboard:
+- municipio: busca textual por nome.
+- faixa_populacao: compara municipios por porte de atendimento.
+- nivel_ubs: identifica pressao sobre a estrutura de UBS.
+- nivel_medicos_10k: identifica disponibilidade medica relativa.
+- habitantes_por_ubs e medicos_por_10k: bons campos para ranking.
+
+=== Estatisticas Gerais ===
+Quantidade de registros: 200
+
+ubs
+- Soma: 3.195
+- Media: 15,97
+- Mediana: 15,50
+- Minimo: 1
+- Maximo: 30
+
+medicos
+- Soma: 10.486
+- Media: 52,43
+- Mediana: 57,00
+- Minimo: 1
+- Maximo: 100
+
+enfermeiros
+- Soma: 15.007
+- Media: 75,03
+- Mediana: 73,50
+- Minimo: 2
+- Maximo: 150
+
+populacao_atendida
+- Soma: 29.733.139
+- Media: 148.665,70
+- Mediana: 153.825,00
+- Minimo: 2.852
+- Maximo: 298.293
+
+Indicadores derivados
+- total_profissionais: media 127,47, minimo 19, maximo 250
+- profissionais_por_ubs: media 13,02, minimo 0,68, maximo 102,00
+- medicos_por_10k: media 11,35, minimo 0,08, maximo 212,43
+- enfermeiros_por_10k: media 13,21, minimo 0,13, maximo 196,96
+- profissionais_por_10k: media 24,56, minimo 1,20, maximo 365,45
+- habitantes_por_ubs: media 15.815,64, minimo 98,34, maximo 150.150,00
+- habitantes_por_medico: media 7.364,10, minimo 47,07, maximo 125.716,00
+- habitantes_por_profissional: media 1.516,22, minimo 27,36, maximo 8.300,97
+
+=== Distribuicao, frequencia e percentual ===
+
+faixa_populacao
+- 100 mil a 199 mil: 70 (35,00%)
+- Ate 100 mil: 67 (33,50%)
+- 200 mil a 299 mil: 63 (31,50%)
+
+nivel_ubs
+- Alta disponibilidade: 108 (54,00%)
+- Disponibilidade media: 49 (24,50%)
+- Baixa disponibilidade: 43 (21,50%)
+
+nivel_medicos_10k
+- Alta disponibilidade: 82 (41,00%)
+- Baixa disponibilidade: 59 (29,50%)
+- Disponibilidade media: 59 (29,50%)
+
+=== Ranking ===
+
+Top 10 maiores populacoes atendidas
+01. Municipio_90 - populacao_atendida: 298.293
+02. Municipio_83 - populacao_atendida: 297.141
+03. Municipio_139 - populacao_atendida: 295.742
+04. Municipio_157 - populacao_atendida: 294.819
+05. Municipio_40 - populacao_atendida: 294.232
+06. Municipio_106 - populacao_atendida: 293.395
+07. Municipio_133 - populacao_atendida: 293.316
+08. Municipio_170 - populacao_atendida: 292.072
+09. Municipio_15 - populacao_atendida: 291.278
+10. Municipio_121 - populacao_atendida: 289.539
+
+Top 10 menores medicos por 10 mil habitantes
+01. Municipio_130 - medicos_por_10k: 0,08
+02. Municipio_90 - medicos_por_10k: 0,13
+03. Municipio_115 - medicos_por_10k: 0,17
+04. Municipio_171 - medicos_por_10k: 0,17
+05. Municipio_166 - medicos_por_10k: 0,20
+06. Municipio_173 - medicos_por_10k: 0,20
+07. Municipio_189 - medicos_por_10k: 0,22
+08. Municipio_186 - medicos_por_10k: 0,24
+09. Municipio_17 - medicos_por_10k: 0,27
+10. Municipio_74 - medicos_por_10k: 0,27
+
+Top 10 maiores habitantes por UBS
+01. Municipio_11 - habitantes_por_ubs: 150.150,00
+02. Municipio_157 - habitantes_por_ubs: 147.409,50
+03. Municipio_33 - habitantes_por_ubs: 117.315,50
+04. Municipio_120 - habitantes_por_ubs: 89.753,33
+05. Municipio_99 - habitantes_por_ubs: 85.957,00
+06. Municipio_148 - habitantes_por_ubs: 74.966,33
+07. Municipio_97 - habitantes_por_ubs: 71.241,50
+08. Municipio_167 - habitantes_por_ubs: 56.505,00
+09. Municipio_45 - habitantes_por_ubs: 55.764,25
+10. Municipio_35 - habitantes_por_ubs: 50.976,33
+
+Top 10 maiores equipes de saude
+01. Municipio_113 - total_profissionais: 250
+02. Municipio_163 - total_profissionais: 239
+03. Municipio_23 - total_profissionais: 237
+04. Municipio_44 - total_profissionais: 236
+05. Municipio_55 - total_profissionais: 233
+06. Municipio_139 - total_profissionais: 232
+07. Municipio_1 - total_profissionais: 230
+08. Municipio_34 - total_profissionais: 225
+09. Municipio_82 - total_profissionais: 224
+10. Municipio_93 - total_profissionais: 223
+
+=== Descobertas sobre os dados ===
+- A base possui 200 municipios e soma 29.733.139 pessoas atendidas.
+- A media geral e de 15,97 UBS por municipio.
+- A media de medicos por 10 mil habitantes e 11,35.
+- 29,50% dos municipios estao em baixa disponibilidade medica pela classificacao interna.
+- 21,50% dos municipios tem baixa disponibilidade de UBS pela relacao habitantes por unidade.
+- O municipio com maior populacao atendida e Municipio_90 (298.293 pessoas).
+- O municipio com maior equipe de saude e Municipio_113 (250 profissionais).
+- O menor indicador de medicos por 10 mil habitantes aparece em Municipio_130 (0,08).
+- A maior pressao sobre UBS aparece em Municipio_11, com 150.150,00 habitantes por UBS.
+- A faixa de populacao mais frequente e '100 mil a 199 mil', com 70 municipios (35,00%).
+- A faixa 'Ate 100 mil' possui a maior media de medicos por 10 mil habitantes (28,45).
+
+========================================================================
+FIM DO RELATORIO
+========================================================================
