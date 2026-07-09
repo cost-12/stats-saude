@@ -7,7 +7,7 @@ Este arquivo explica, de forma simples, para que serve cada funcao de
 
 O programa segue esta ordem:
 
-1. `main()` le os argumentos do terminal.
+1. `main()` define o CSV padrao do projeto.
 2. `carregar_dados()` abre o CSV.
 3. Cada linha do CSV vira um dicionario.
 4. `adicionar_indicadores()` cria informacoes calculadas.
@@ -304,25 +304,16 @@ Opcoes disponiveis:
 - `Estatisticas`;
 - `Relatorio TXT`.
 
-### `parse_args()`
-
-Le argumentos passados pelo terminal.
-
-Argumentos aceitos:
-
-- `--csv`
-- `--relatorio`
-
 ### `main()`
 
 E a funcao principal do programa.
 
 Ela:
 
-- le argumentos do terminal;
+- usa o CSV padrao `data/08_saude.csv`;
 - verifica se o CSV existe;
 - carrega os dados;
-- gera relatorio direto ou abre o menu principal.
+- abre o menu principal.
 
 ### `if __name__ == "__main__":`
 

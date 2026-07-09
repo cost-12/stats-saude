@@ -3,7 +3,6 @@
 ## O programa le um CSV, guarda os registros em uma lista de dicionarios,
 ## calcula estatisticas, permite consultas pelo menu e gera um relatorio TXT.
 ## Foi escrito apenas com bibliotecas padrao do Python para facilitar o estudo.
-import argparse
 import csv
 from pathlib import Path
 from statistics import mean, median
@@ -648,27 +647,9 @@ def menu_principal(registros, caminho_csv):
             print("Opcao invalida. Tente novamente.")
 
 
-def parse_args():
-    ## Le argumentos de linha de comando, como --csv e --relatorio.
-    analisador_argumentos = argparse.ArgumentParser(description="Dashboard terminal para dados de saude.")
-    analisador_argumentos.add_argument(
-        "--csv",
-        type=Path,
-        default=CSV_PADRAO,
-        help="Caminho do arquivo CSV. Padrao: data/08_saude.csv",
-    )
-    analisador_argumentos.add_argument(
-        "--relatorio",
-        action="store_true",
-        help="Gera o relatorio TXT e encerra, sem abrir o menu interativo.",
-    )
-    return analisador_argumentos.parse_args()
-
-
 def main():
-    ## Ponto de entrada: carrega os registros e abre menu ou gera relatorio.
-    argumentos = parse_args()
-    caminho_csv = argumentos.csv.resolve()
+    ## Ponto de entrada: carrega os registros e abre o menu.
+    caminho_csv = CSV_PADRAO
 
     if not caminho_csv.exists():
         print(f"Arquivo CSV nao encontrado: {caminho_csv}")
@@ -676,11 +657,6 @@ def main():
 
     registros = carregar_dados(caminho_csv)
     print(f"Base carregada: {len(registros)} registros de {caminho_csv}")
-
-    if argumentos.relatorio:
-        caminho_relatorio = gerar_relatorio(registros, RELATORIO_PADRAO, caminho_csv)
-        print(f"Relatorio gerado em: {caminho_relatorio}")
-        return
 
     menu_principal(registros, caminho_csv)
 

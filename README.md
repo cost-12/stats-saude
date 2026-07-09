@@ -38,7 +38,6 @@ uteis e gera um relatorio TXT com informações relevantes da tabela.
 
 O projeto usa apenas Python e bibliotecas padrao:
 
-- `argparse`
 - `csv`
 - `pathlib`
 - `statistics`
@@ -179,25 +178,8 @@ Gera ou atualiza:
 reports/relatorio_saude.txt
 ```
 
-## Gerar relatorio sem abrir o menu
-
-```powershell
-py -3 src/main.py --relatorio
-```
-
-## Usar outro CSV
-
-```powershell
-py -3 src/main.py --csv caminho/do/arquivo.csv
-```
-
-Para gerar relatorio com outro CSV:
-
-```powershell
-py -3 src/main.py --csv caminho/do/arquivo.csv --relatorio
-```
-
-O CSV precisa possuir as colunas esperadas:
+O programa usa sempre o CSV padrao do projeto. Esse CSV precisa possuir as
+colunas esperadas:
 
 - `municipio`
 - `ubs`
@@ -209,7 +191,7 @@ O CSV precisa possuir as colunas esperadas:
 
 O relatorio TXT contem:
 
-- cabecalho com data e base analisada;
+- cabecalho com a base analisada;
 - resumo da base;
 - indicadores principais;
 - distribuicao, frequencia e percentual;
@@ -232,7 +214,6 @@ Comandos usados para validar o projeto:
 
 ```powershell
 py -3 -m py_compile src/main.py
-py -3 src/main.py --relatorio
 ```
 
 Para testar abertura e saida do menu:

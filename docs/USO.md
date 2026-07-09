@@ -10,7 +10,6 @@ Este guia mostra como executar a dashboard e usar o menu simplificado.
 
 O projeto usa apenas bibliotecas padrao do Python:
 
-- `argparse`
 - `csv`
 - `pathlib`
 - `statistics`
@@ -106,29 +105,8 @@ O relatorio contem:
 - rankings importantes em Top 5;
 - descobertas sobre os dados.
 
-## Gerar relatorio sem abrir o menu
-
-Use:
-
-```powershell
-py -3 src/main.py --relatorio
-```
-
-## Usar outro CSV
-
-Tambem e possivel informar outro arquivo CSV:
-
-```powershell
-py -3 src/main.py --csv caminho/do/arquivo.csv
-```
-
-Para gerar relatorio com outro CSV:
-
-```powershell
-py -3 src/main.py --csv caminho/do/arquivo.csv --relatorio
-```
-
-O outro CSV deve ter as colunas esperadas pelo projeto:
+O programa usa sempre o CSV padrao do projeto. Esse CSV deve ter as colunas
+esperadas:
 
 - `municipio`
 - `ubs`
