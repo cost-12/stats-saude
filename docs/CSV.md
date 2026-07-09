@@ -36,14 +36,14 @@ municipio,ubs,medicos,enfermeiros,populacao_atendida
 Exemplo de linha:
 
 ```text
-Municipio_1,25,82,148,188675
+Sao Paulo,25,82,148,188675
 ```
 
 Depois da leitura com `DictReader`, essa linha fica parecida com:
 
 ```python
 {
-    "municipio": "Municipio_1",
+    "municipio": "Sao Paulo",
     "ubs": "25",
     "medicos": "82",
     "enfermeiros": "148",
@@ -131,7 +131,7 @@ Depois da leitura, o programa trabalha com uma lista assim:
 ```python
 [
     {
-        "municipio": "Municipio_1",
+        "municipio": "Sao Paulo",
         "ubs": 25,
         "medicos": 82,
         "enfermeiros": 148,

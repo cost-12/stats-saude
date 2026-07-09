@@ -59,7 +59,7 @@ Depois, o programa permite buscar um municipio pelo nome.
 Exemplo:
 
 ```text
-Buscar municipio por nome (enter para voltar): Municipio_10
+Buscar municipio por nome (enter para voltar): Goiania
 ```
 
 Se voce apertar `Enter` sem digitar nada, a dashboard volta ao menu principal.

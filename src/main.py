@@ -1,8 +1,4 @@
-## Dashboard de saude via terminal.
-##
-## O programa le um CSV, guarda os registros em uma lista de dicionarios,
-## calcula estatisticas, permite consultas pelo menu e gera um relatorio TXT.
-## Foi escrito apenas com bibliotecas padrao do Python para facilitar o estudo.
+## calcula estatisticas por biblioteca padrao, e path para organização de pastas do relatorio TXT
 import csv
 from pathlib import Path
 from statistics import mean, median
