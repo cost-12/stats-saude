@@ -12,7 +12,6 @@ O projeto usa apenas bibliotecas padrao do Python:
 
 - `argparse`
 - `csv`
-- `datetime`
 - `pathlib`
 - `statistics`
 

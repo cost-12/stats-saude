@@ -40,7 +40,6 @@ O projeto usa apenas Python e bibliotecas padrao:
 
 - `argparse`
 - `csv`
-- `datetime`
 - `pathlib`
 - `statistics`
 
@@ -57,6 +56,7 @@ stats-saude/
 |   +-- README.md
 |   +-- USO.md
 |   +-- FUNCOES.md
+|   +-- CSV.md
 +-- reports/
 |   +-- relatorio_saude.txt
 +-- src/
@@ -224,6 +224,7 @@ Arquivos de apoio:
 - [docs/README.md](docs/README.md): visao geral do projeto.
 - [docs/USO.md](docs/USO.md): guia de execucao e uso do menu.
 - [docs/FUNCOES.md](docs/FUNCOES.md): explicacao de constantes e funcoes.
+- [docs/CSV.md](docs/CSV.md): explicacao do uso da biblioteca `csv`.
 
 ## Validacao
 

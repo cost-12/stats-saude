@@ -17,6 +17,7 @@ stats-saude/
 |   +-- README.md
 |   +-- USO.md
 |   +-- FUNCOES.md
+|   +-- CSV.md
 +-- reports/
 |   +-- relatorio_saude.txt
 +-- src/
@@ -30,6 +31,7 @@ stats-saude/
 - `reports/relatorio_saude.txt`: relatorio gerado pela dashboard.
 - `docs/USO.md`: explica como executar e usar o menu.
 - `docs/FUNCOES.md`: explica para que serve cada funcao do codigo.
+- `docs/CSV.md`: explica como a biblioteca `csv` e usada no projeto.
 
 ## Dados utilizados
 

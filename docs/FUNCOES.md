@@ -57,6 +57,10 @@ Define as categorias usadas nas distribuicoes:
 
 Define quais rankings aparecem automaticamente no relatorio TXT.
 
+### `CONSULTAS_PRIORITARIAS`
+
+Define os rankings mostrados na opcao `Consultas` do menu.
+
 ## Conversao e calculos basicos
 
 ### `converter_valor(valor)`
@@ -162,12 +166,6 @@ Conta quantas vezes cada categoria aparece em uma coluna.
 
 Tambem calcula o percentual de cada categoria.
 
-### `pegar_frequencia(item_frequencia)`
-
-Funcao auxiliar usada para ordenar os itens de frequencia.
-
-Ela recebe um dicionario e retorna o valor da chave `frequencia`.
-
 ### `ranking(registros, nome_coluna, reverso=True, limite=10)`
 
 Ordena os registros por uma coluna.
@@ -189,10 +187,6 @@ Ela ajuda a manter a tabela legivel no terminal.
 Monta uma tabela em formato de texto.
 
 Ela nao imprime sozinha. Apenas retorna o texto pronto.
-
-### `imprimir_tabela(registros, campos=None, limite=20)`
-
-Chama `texto_tabela()` e imprime o resultado no terminal.
 
 ## Consultas
 

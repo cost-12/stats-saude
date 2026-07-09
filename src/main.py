@@ -1,13 +1,10 @@
-"""Dashboard de saude via terminal.
-
-O programa le um CSV, guarda os registros em uma lista de dicionarios,
-calcula estatisticas, permite consultas pelo menu e gera um relatorio TXT.
-Foi escrito apenas com bibliotecas padrao do Python para facilitar o estudo.
-"""
-# from import foi usado pois permite importar apenas as funções necessárias de um módulo, sem poluir o namespace com vários arquivos.
+## Dashboard de saude via terminal.
+##
+## O programa le um CSV, guarda os registros em uma lista de dicionarios,
+## calcula estatisticas, permite consultas pelo menu e gera um relatorio TXT.
+## Foi escrito apenas com bibliotecas padrao do Python para facilitar o estudo.
 import argparse
 import csv
-from datetime import datetime
 from pathlib import Path
 from statistics import mean, median
 
@@ -57,9 +54,30 @@ RANKINGS_RELATORIO = [
     ("Maiores habitantes por UBS", "habitantes_por_ubs", True),
 ]
 
+CONSULTAS_PRIORITARIAS = [
+    (
+        "Menor disponibilidade de medicos por 10 mil habitantes",
+        "medicos_por_10k",
+        False,
+        ["municipio", "medicos", "populacao_atendida", "medicos_por_10k"],
+    ),
+    (
+        "Maior numero de habitantes por UBS",
+        "habitantes_por_ubs",
+        True,
+        ["municipio", "ubs", "populacao_atendida", "habitantes_por_ubs"],
+    ),
+    (
+        "Maior populacao atendida",
+        "populacao_atendida",
+        True,
+        ["municipio", "populacao_atendida", "ubs", "total_profissionais"],
+    ),
+]
+
 
 def converter_valor(valor):
-    """Converte um valor lido do CSV para int, float ou texto."""
+    ## Converte um valor lido do CSV para int, float ou texto.
     if valor is None:
         return ""
 
@@ -88,14 +106,14 @@ def converter_valor(valor):
 
 
 def dividir(numerador, denominador):
-    """Divide dois valores e evita erro quando o denominador e zero."""
+    ## Divide dois valores e evita erro quando o denominador e zero.
     if denominador in (0, "", None):
         return 0
     return numerador / denominador
 
 
 def categorizar_populacao(populacao):
-    """Classifica um municipio por faixa de populacao atendida."""
+    ## Classifica um municipio por faixa de populacao atendida.
     if populacao < 100_000:
         return "Ate 100 mil"
     if populacao < 200_000:
@@ -106,7 +124,7 @@ def categorizar_populacao(populacao):
 
 
 def categorizar_ubs(habitantes_por_ubs):
-    """Classifica a disponibilidade de UBS pela relacao habitantes por UBS."""
+    ## Classifica a disponibilidade de UBS pela relacao habitantes por UBS.
     if habitantes_por_ubs <= 10_000:
         return "Alta disponibilidade"
     if habitantes_por_ubs <= 20_000:
@@ -115,7 +133,7 @@ def categorizar_ubs(habitantes_por_ubs):
 
 
 def categorizar_medicos(medicos_por_10k):
-    """Classifica a disponibilidade medica por 10 mil habitantes."""
+    ## Classifica a disponibilidade medica por 10 mil habitantes.
     if medicos_por_10k >= 4:
         return "Alta disponibilidade"
     if medicos_por_10k >= 2:
@@ -124,7 +142,7 @@ def categorizar_medicos(medicos_por_10k):
 
 
 def adicionar_indicadores(registro):
-    """Inclui no registro os indicadores calculados usados pela dashboard."""
+    ## Inclui no registro os indicadores calculados usados pela dashboard.
     ubs = registro.get("ubs", 0)
     medicos = registro.get("medicos", 0)
     enfermeiros = registro.get("enfermeiros", 0)
@@ -148,7 +166,7 @@ def adicionar_indicadores(registro):
 
 
 def carregar_dados(caminho_csv):
-    """Le o CSV e devolve uma lista de dicionarios com indicadores extras."""
+    ## Le o CSV e devolve uma lista de dicionarios com indicadores extras.
     registros_municipios = []
     with caminho_csv.open("r", encoding="utf-8-sig", newline="") as arquivo:
         # DictReader usa a primeira linha do CSV como nome das chaves do dicionario.
@@ -164,7 +182,7 @@ def carregar_dados(caminho_csv):
 
 
 def valor_formatado(valor):
-    """Formata numeros no padrao brasileiro para mostrar ao usuario."""
+    ## Formata numeros no padrao brasileiro para mostrar ao usuario.
     if isinstance(valor, float):
         return f"{valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     if isinstance(valor, int):
@@ -173,14 +191,14 @@ def valor_formatado(valor):
 
 
 def percentual(parte, total):
-    """Calcula qual percentual uma parte representa do total."""
+    ## Calcula qual percentual uma parte representa do total.
     if total == 0:
         return 0
     return (parte / total) * 100
 
 
 def valores_numericos(registros, nome_coluna):
-    """Pega apenas os valores numericos de uma coluna."""
+    ## Pega apenas os valores numericos de uma coluna.
     valores_da_coluna = []
     for registro in registros:
         valor_da_coluna = registro.get(nome_coluna)
@@ -190,7 +208,7 @@ def valores_numericos(registros, nome_coluna):
 
 
 def estatisticas_coluna(registros, nome_coluna):
-    """Calcula soma, media, mediana, minimo e maximo de uma coluna."""
+    ## Calcula soma, media, mediana, minimo e maximo de uma coluna.
     valores_da_coluna = valores_numericos(registros, nome_coluna)
     if not valores_da_coluna:
         return None
@@ -206,7 +224,10 @@ def estatisticas_coluna(registros, nome_coluna):
 
 
 def frequencia(registros, nome_coluna):
-    """Conta frequencia e percentual de cada categoria em uma coluna."""
+    ## Conta frequencia e percentual de cada categoria em uma coluna.
+    def pegar_frequencia(resumo_categoria):
+        return resumo_categoria["frequencia"]
+
     contagem_por_categoria = {}
     for registro in registros:
         categoria = registro.get(nome_coluna, "Nao informado")
@@ -225,13 +246,8 @@ def frequencia(registros, nome_coluna):
     return sorted(resumo_frequencias, key=pegar_frequencia, reverse=True)
 
 
-def pegar_frequencia(item_frequencia):
-    """Retorna a frequencia de um item para ajudar na ordenacao."""
-    return item_frequencia["frequencia"]
-
-
 def ranking(registros, nome_coluna, reverso=True, limite=10):
-    """Ordena os registros por uma coluna e retorna os primeiros colocados."""
+    ## Ordena os registros por uma coluna e retorna os primeiros colocados.
     def pegar_valor(registro):
         return registro.get(nome_coluna, 0)
 
@@ -240,7 +256,7 @@ def ranking(registros, nome_coluna, reverso=True, limite=10):
 
 
 def cortar_texto(texto, limite=28):
-    """Corta textos muito longos para nao quebrar a tabela."""
+    ## Corta textos muito longos para nao quebrar a tabela.
     texto = str(texto)
     if len(texto) <= limite:
         return texto
@@ -248,7 +264,7 @@ def cortar_texto(texto, limite=28):
 
 
 def texto_tabela(registros, campos=None, limite=20):
-    """Monta uma tabela em texto para exibir no terminal ou no relatorio."""
+    ## Monta uma tabela em texto para exibir no terminal ou no relatorio.
     if not registros:
         return "Nenhum registro encontrado."
 
@@ -300,13 +316,8 @@ def texto_tabela(registros, campos=None, limite=20):
     return "\n".join(linhas_tabela) + rodape
 
 
-def imprimir_tabela(registros, campos=None, limite=20):
-    """Mostra no terminal uma tabela gerada por texto_tabela."""
-    print(texto_tabela(registros, campos, limite))
-
-
 def mostrar_estatisticas_gerais(registros):
-    """Exibe estatisticas gerais e indicadores derivados no terminal."""
+    ## Exibe estatisticas gerais e indicadores derivados no terminal.
     print("\n=== Estatisticas Gerais ===")
     print(f"Quantidade de registros: {len(registros)}")
 
@@ -328,11 +339,8 @@ def mostrar_estatisticas_gerais(registros):
         if estatisticas:
             print(f"  {nome_coluna}: media {valor_formatado(estatisticas['media'])}")
 
-
-
-## Exibe informacoes das analises de categorias
 def mostrar_distribuicoes(registros):
-
+    ## Exibe frequencia e percentual das categorias da analise.
     print("\n=== Distribuicao, frequencia e percentual ===")
 
     for nome_coluna in CAMPOS_CATEGORICOS_ANALISE:
@@ -348,7 +356,7 @@ def mostrar_distribuicoes(registros):
 
 
 def buscar_municipios_por_nome(registros, texto_busca):
-    """Retorna municipios que possuem o termo informado no nome."""
+    ## Retorna municipios que possuem o termo informado no nome.
     texto_busca = texto_busca.strip().lower()
     municipios_encontrados = []
     for registro in registros:
@@ -359,33 +367,22 @@ def buscar_municipios_por_nome(registros, texto_busca):
 
 
 def mostrar_municipios_prioritarios(registros):
-    """Mostra rankings que ajudam a localizar municipios com maior atencao."""
+    ## Mostra rankings que ajudam a localizar municipios com maior atencao.
     print("\n=== Municipios que merecem atencao ===")
 
-    print("\nMenor disponibilidade de medicos por 10 mil habitantes")
-    imprimir_tabela(
-        ranking(registros, "medicos_por_10k", reverso=False),
-        campos=["municipio", "medicos", "populacao_atendida", "medicos_por_10k"],
-        limite=LIMITE_RANKING_TELA,
-    )
-
-    print("\nMaior numero de habitantes por UBS")
-    imprimir_tabela(
-        ranking(registros, "habitantes_por_ubs", reverso=True),
-        campos=["municipio", "ubs", "populacao_atendida", "habitantes_por_ubs"],
-        limite=LIMITE_RANKING_TELA,
-    )
-
-    print("\nMaior populacao atendida")
-    imprimir_tabela(
-        ranking(registros, "populacao_atendida", reverso=True),
-        campos=["municipio", "populacao_atendida", "ubs", "total_profissionais"],
-        limite=LIMITE_RANKING_TELA,
-    )
+    for titulo, nome_coluna, reverso, colunas_tabela in CONSULTAS_PRIORITARIAS:
+        print(f"\n{titulo}")
+        registros_ranking = ranking(registros, nome_coluna, reverso=reverso)
+        tabela = texto_tabela(
+            registros_ranking,
+            campos=colunas_tabela,
+            limite=LIMITE_RANKING_TELA,
+        )
+        print(tabela)
 
 
 def mostrar_consultas(registros):
-    """Mostra consultas principais sem abrir um segundo menu."""
+    ## Mostra consultas principais sem abrir um segundo menu.
     print("\n=== Consultas ===")
     print(f"Total de registros disponiveis para consulta: {len(registros)}")
 
@@ -397,11 +394,11 @@ def mostrar_consultas(registros):
 
     municipios_encontrados = buscar_municipios_por_nome(registros, texto_busca)
     print(f"\nRegistros encontrados: {len(municipios_encontrados)}")
-    imprimir_tabela(municipios_encontrados, limite=30)
+    print(texto_tabela(municipios_encontrados, limite=30))
 
 
 def resumir_base(registros):
-    """Calcula um resumo simples da base para manter o relatorio curto."""
+    ## Calcula um resumo simples da base para manter o relatorio curto.
     resumo = {
         "quantidade_registros": len(registros),
         "quantidade_colunas": len(registros[0]) if registros else 0,
@@ -423,7 +420,7 @@ def resumir_base(registros):
 
 
 def linhas_resumo_base(registros):
-    """Cria uma secao curta com as informacoes principais da base."""
+    ## Cria uma secao curta com as informacoes principais da base.
     resumo = resumir_base(registros)
     return [
         "=== Resumo da base ===",
@@ -435,7 +432,7 @@ def linhas_resumo_base(registros):
 
 
 def gerar_descobertas(registros):
-    """Gera frases com informacoes relevantes encontradas na base."""
+    ## Gera frases com informacoes relevantes encontradas na base.
     if not registros:
         return ["Nao ha dados carregados."]
 
@@ -511,21 +508,21 @@ def gerar_descobertas(registros):
 
 
 def mostrar_descobertas(registros):
-    """Mostra no terminal as descobertas geradas pela analise."""
+    ## Mostra no terminal as descobertas geradas pela analise.
     print("\n=== Descobertas sobre os dados ===")
     for descoberta in gerar_descobertas(registros):
         print(f"- {descoberta}")
 
 
 def mostrar_estatisticas(registros):
-    """Mostra um bloco unico com estatisticas, distribuicoes e descobertas."""
+    ## Mostra estatisticas, distribuicoes e descobertas no terminal.
     mostrar_estatisticas_gerais(registros)
     mostrar_distribuicoes(registros)
     mostrar_descobertas(registros)
 
 
 def linhas_estatisticas(registros):
-    """Cria as linhas de texto da secao de estatisticas do relatorio."""
+    ## Cria as linhas de texto da secao de estatisticas do relatorio.
     linhas_estatisticas_relatorio = []
     linhas_estatisticas_relatorio.append("=== Indicadores principais ===")
     linhas_estatisticas_relatorio.append(f"Quantidade de registros: {len(registros)}")
@@ -552,7 +549,7 @@ def linhas_estatisticas(registros):
 
 
 def linhas_distribuicao(registros):
-    """Cria as linhas de texto com frequencias e percentuais do relatorio."""
+    ## Cria as linhas de texto com frequencias e percentuais do relatorio.
     linhas_distribuicao_relatorio = ["=== Distribuicao, frequencia e percentual ==="]
     for nome_coluna in CAMPOS_CATEGORICOS_ANALISE:
         linhas_distribuicao_relatorio.append("")
@@ -566,7 +563,7 @@ def linhas_distribuicao(registros):
 
 
 def linhas_rankings(registros):
-    """Cria as linhas de texto com os rankings do relatorio."""
+    ## Cria as linhas de texto com os rankings do relatorio.
     linhas_rankings_relatorio = [f"=== Rankings principais - Top {LIMITE_RANKING_RELATORIO} ==="]
 
     for titulo, nome_coluna, reverso in RANKINGS_RELATORIO:
@@ -588,16 +585,14 @@ def linhas_rankings(registros):
 
 
 def gerar_relatorio(registros, caminho_saida, caminho_csv):
-    """Gera o arquivo TXT final reunindo analise, estatisticas e rankings."""
+    ## Gera o arquivo TXT final reunindo resumo, estatisticas e rankings.
     # Garante que a pasta reports exista antes de tentar salvar o TXT.
     caminho_saida.parent.mkdir(parents=True, exist_ok=True)
-    agora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
     linhas_relatorio = []
     linhas_relatorio.append("=" * 72)
     linhas_relatorio.append("RELATORIO DA DASHBOARD DE SAUDE")
     linhas_relatorio.append("=" * 72)
-    linhas_relatorio.append(f"Gerado em: {agora}")
     linhas_relatorio.append(f"Base analisada: {caminho_csv}")
     linhas_relatorio.append("")
     linhas_relatorio.append("Observacao: classificacoes de disponibilidade sao operacionais para analise exploratoria")
@@ -627,7 +622,7 @@ def gerar_relatorio(registros, caminho_saida, caminho_csv):
 
 
 def menu_principal(registros, caminho_csv):
-    """Controla o menu principal da dashboard no terminal."""
+    ## Controla o menu principal da dashboard no terminal.
     while True:
         print("\n" + "=" * 50)
         print("DASHBOARD DE SAUDE - TERMINAL")
@@ -654,7 +649,7 @@ def menu_principal(registros, caminho_csv):
 
 
 def parse_args():
-    """Le argumentos de linha de comando, como --csv e --relatorio."""
+    ## Le argumentos de linha de comando, como --csv e --relatorio.
     analisador_argumentos = argparse.ArgumentParser(description="Dashboard terminal para dados de saude.")
     analisador_argumentos.add_argument(
         "--csv",
@@ -671,7 +666,7 @@ def parse_args():
 
 
 def main():
-    """Ponto de entrada: carrega os registros e abre menu ou gera relatorio."""
+    ## Ponto de entrada: carrega os registros e abre menu ou gera relatorio.
     argumentos = parse_args()
     caminho_csv = argumentos.csv.resolve()
 
