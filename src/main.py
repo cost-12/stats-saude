@@ -329,8 +329,10 @@ def mostrar_estatisticas_gerais(registros):
             print(f"  {nome_coluna}: media {valor_formatado(estatisticas['media'])}")
 
 
+
+## Exibe informacoes das analises de categorias
 def mostrar_distribuicoes(registros):
-    """Exibe distribuicao, frequencia e percentual das categorias da analise."""
+
     print("\n=== Distribuicao, frequencia e percentual ===")
 
     for nome_coluna in CAMPOS_CATEGORICOS_ANALISE:
