@@ -131,19 +131,19 @@ Para cada linha:
 - cria um dicionario;
 - converte valores numericos;
 - adiciona indicadores calculados;
-- adiciona o dicionario na lista `dados`.
+- adiciona o dicionario na lista `registros_municipios`.
 
 No final, retorna uma lista de dicionarios.
 
 ## Estatisticas e organizacao dos dados
 
-### `valores_numericos(dados, campo)`
+### `valores_numericos(registros, nome_coluna)`
 
 Recebe a lista de registros e o nome de uma coluna.
 
 Retorna apenas os valores numericos dessa coluna.
 
-### `estatisticas_coluna(dados, campo)`
+### `estatisticas_coluna(registros, nome_coluna)`
 
 Calcula estatisticas de uma coluna numerica:
 
@@ -156,25 +156,25 @@ Calcula estatisticas de uma coluna numerica:
 
 Retorna um dicionario com esses resultados.
 
-### `colunas_numericas(dados)`
+### `colunas_numericas(registros)`
 
 Verifica quais colunas possuem valores numericos.
 
 E usada na analise exploratoria do relatorio para listar intervalos das colunas numericas.
 
-### `frequencia(dados, campo)`
+### `frequencia(registros, nome_coluna)`
 
 Conta quantas vezes cada categoria aparece em uma coluna.
 
 Tambem calcula o percentual de cada categoria.
 
-### `pegar_frequencia(item)`
+### `pegar_frequencia(item_frequencia)`
 
 Funcao auxiliar usada para ordenar os itens de frequencia.
 
 Ela recebe um dicionario e retorna o valor da chave `frequencia`.
 
-### `ranking(dados, campo, reverso=True, limite=10)`
+### `ranking(registros, nome_coluna, reverso=True, limite=10)`
 
 Ordena os registros por uma coluna.
 
@@ -182,16 +182,16 @@ Quando `reverso=True`, mostra os maiores valores primeiro.
 
 Quando `reverso=False`, mostra os menores valores primeiro.
 
-### `agrupar_media(dados, categoria, campo)`
+### `agrupar_media(registros, categoria, nome_coluna)`
 
-Agrupa os dados por uma categoria e calcula a media de um campo numerico.
+Agrupa os registros por uma categoria e calcula a media de uma coluna numerica.
 
 Exemplo:
 
 - agrupar por `faixa_populacao`;
 - calcular a media de `medicos_por_10k`.
 
-### `pegar_media_do_grupo(item)`
+### `pegar_media_do_grupo(grupo_com_media)`
 
 Funcao auxiliar usada para ordenar os grupos pela media calculada.
 
@@ -217,13 +217,13 @@ Chama `texto_tabela()` e imprime o resultado no terminal.
 
 ## Consultas
 
-### `buscar_municipios_por_nome(dados, termo)`
+### `buscar_municipios_por_nome(registros, texto_busca)`
 
 Procura municipios cujo nome contem o termo digitado.
 
 Retorna uma lista de registros encontrados.
 
-### `mostrar_municipios_prioritarios(dados)`
+### `mostrar_municipios_prioritarios(registros)`
 
 Mostra consultas prontas para localizar municipios que merecem atencao:
 
@@ -231,7 +231,7 @@ Mostra consultas prontas para localizar municipios que merecem atencao:
 - maior numero de habitantes por UBS;
 - maior populacao atendida.
 
-### `mostrar_consultas(dados)`
+### `mostrar_consultas(registros)`
 
 Executa a opcao `Consultas` do menu principal.
 
@@ -239,7 +239,7 @@ Ela mostra os municipios prioritarios e permite uma busca simples por nome.
 
 ## Estatisticas no terminal
 
-### `mostrar_estatisticas_gerais(dados)`
+### `mostrar_estatisticas_gerais(registros)`
 
 Mostra no terminal:
 
@@ -251,11 +251,11 @@ Mostra no terminal:
 - maximo;
 - indicadores derivados.
 
-### `mostrar_distribuicoes(dados)`
+### `mostrar_distribuicoes(registros)`
 
 Mostra frequencia e percentual das categorias da analise exploratoria.
 
-### `gerar_descobertas(dados)`
+### `gerar_descobertas(registros)`
 
 Cria frases com informacoes relevantes sobre a base.
 
@@ -265,11 +265,11 @@ Exemplos:
 - media de UBS por municipio;
 - percentual de municipios com baixa disponibilidade medica.
 
-### `mostrar_descobertas(dados)`
+### `mostrar_descobertas(registros)`
 
 Imprime no terminal as frases criadas por `gerar_descobertas()`.
 
-### `mostrar_estatisticas(dados)`
+### `mostrar_estatisticas(registros)`
 
 Executa a opcao `Estatisticas` do menu principal.
 
@@ -281,25 +281,25 @@ Ela chama:
 
 ## Relatorio TXT
 
-### `linhas_analise_exploratoria(dados)`
+### `linhas_analise_exploratoria(registros)`
 
 Cria uma lista de linhas de texto com a Analise Exploratoria de Dados.
 
 Ela e usada no relatorio.
 
-### `linhas_estatisticas(dados)`
+### `linhas_estatisticas(registros)`
 
 Cria as linhas de texto da secao de estatisticas do relatorio.
 
-### `linhas_distribuicao(dados)`
+### `linhas_distribuicao(registros)`
 
 Cria as linhas de texto da secao de distribuicao, frequencia e percentual.
 
-### `linhas_rankings(dados)`
+### `linhas_rankings(registros)`
 
 Cria as linhas de texto da secao de rankings do relatorio.
 
-### `gerar_relatorio(dados, caminho_saida, caminho_csv)`
+### `gerar_relatorio(registros, caminho_saida, caminho_csv)`
 
 Gera o arquivo TXT final.
 
@@ -314,7 +314,7 @@ Ele junta:
 
 ## Entrada do programa
 
-### `menu_principal(dados, caminho_csv)`
+### `menu_principal(registros, caminho_csv)`
 
 Controla o menu unico da dashboard.
 

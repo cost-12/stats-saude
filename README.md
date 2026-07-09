@@ -6,16 +6,10 @@
 ![Relatorio](https://img.shields.io/badge/relatorio-TXT-orange)
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
 
-Dashboard de saude executada totalmente pelo terminal. O projeto le um arquivo
-CSV, transforma os registros em uma lista de dicionarios, calcula estatisticas
-uteis e gera um relatorio TXT com informacoes relevantes sobre a base.
+Esse projeto de Dashboard foi criado para ler arquivos CSV, transforma os registros em uma lista de dicionarios, calcula estatisticas
+uteis e gera um relatorio TXT com informações relevantes da tabela.
 
-## Objetivo
-
-O objetivo do projeto e facilitar a consulta e a analise de dados de saude sem
-usar interface grafica ou bibliotecas externas.
-
-A dashboard permite responder perguntas como:
+## Ações
 
 - Quais municipios possuem menor disponibilidade de medicos por 10 mil habitantes?
 - Quais municipios possuem maior quantidade de habitantes por UBS?
