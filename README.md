@@ -210,10 +210,10 @@ O CSV precisa possuir as colunas esperadas:
 O relatorio TXT contem:
 
 - cabecalho com data e base analisada;
-- analise exploratoria dos dados;
-- estatisticas gerais;
+- resumo da base;
+- indicadores principais;
 - distribuicao, frequencia e percentual;
-- rankings de municipios;
+- rankings principais de municipios, limitados a Top 5;
 - descobertas sobre os dados;
 - fechamento do relatorio.
 

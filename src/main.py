@@ -30,6 +30,11 @@ CAMPOS_INDICADORES = [
     "habitantes_por_medico",
     "habitantes_por_profissional",
 ]
+CAMPOS_INDICADORES_RELATORIO = [
+    "medicos_por_10k",
+    "habitantes_por_ubs",
+    "profissionais_por_10k",
+]
 
 # Campos usados na exibicao padrao de tabelas.
 CAMPOS_TABELA = [
@@ -43,12 +48,13 @@ CAMPOS_TABELA = [
     "faixa_populacao",
 ]
 CAMPOS_CATEGORICOS_ANALISE = ["faixa_populacao", "nivel_ubs", "nivel_medicos_10k"]
+LIMITE_RANKING_TELA = 10
+LIMITE_RANKING_RELATORIO = 5
 
 RANKINGS_RELATORIO = [
-    ("Top 10 maiores populacoes atendidas", "populacao_atendida", True),
-    ("Top 10 menores medicos por 10 mil habitantes", "medicos_por_10k", False),
-    ("Top 10 maiores habitantes por UBS", "habitantes_por_ubs", True),
-    ("Top 10 maiores equipes de saude", "total_profissionais", True),
+    ("Maiores populacoes atendidas", "populacao_atendida", True),
+    ("Menores medicos por 10 mil habitantes", "medicos_por_10k", False),
+    ("Maiores habitantes por UBS", "habitantes_por_ubs", True),
 ]
 
 
@@ -199,24 +205,6 @@ def estatisticas_coluna(registros, nome_coluna):
     }
 
 
-def colunas_numericas(registros):
-    """Descobre quais colunas possuem pelo menos um valor numerico."""
-    if not registros:
-        return []
-
-    colunas_com_numeros = []
-    for nome_coluna in registros[0]:
-        encontrou_numero = False
-        for registro in registros:
-            if isinstance(registro.get(nome_coluna), (int, float)):
-                encontrou_numero = True
-                break
-
-        if encontrou_numero:
-            colunas_com_numeros.append(nome_coluna)
-    return colunas_com_numeros
-
-
 def frequencia(registros, nome_coluna):
     """Conta frequencia e percentual de cada categoria em uma coluna."""
     contagem_por_categoria = {}
@@ -249,28 +237,6 @@ def ranking(registros, nome_coluna, reverso=True, limite=10):
 
     registros_ordenados = sorted(registros, key=pegar_valor, reverse=reverso)
     return registros_ordenados[:limite]
-
-
-def agrupar_media(registros, categoria, nome_coluna):
-    """Agrupa registros por categoria e calcula a media de uma coluna numerica."""
-    valores_por_grupo = {}
-    for registro in registros:
-        valor_da_coluna = registro.get(nome_coluna)
-        if isinstance(valor_da_coluna, (int, float)):
-            nome_grupo = registro.get(categoria, "Nao informado")
-            if nome_grupo not in valores_por_grupo:
-                valores_por_grupo[nome_grupo] = []
-            valores_por_grupo[nome_grupo].append(valor_da_coluna)
-
-    medias_por_grupo = []
-    for nome_grupo, valores_do_grupo in valores_por_grupo.items():
-        medias_por_grupo.append((nome_grupo, mean(valores_do_grupo), len(valores_do_grupo)))
-    return sorted(medias_por_grupo, key=pegar_media_do_grupo, reverse=True)
-
-
-def pegar_media_do_grupo(grupo_com_media):
-    """Retorna a media guardada na tupla criada por agrupar_media."""
-    return grupo_com_media[1]
 
 
 def cortar_texto(texto, limite=28):
@@ -398,21 +364,21 @@ def mostrar_municipios_prioritarios(registros):
     imprimir_tabela(
         ranking(registros, "medicos_por_10k", reverso=False),
         campos=["municipio", "medicos", "populacao_atendida", "medicos_por_10k"],
-        limite=10,
+        limite=LIMITE_RANKING_TELA,
     )
 
     print("\nMaior numero de habitantes por UBS")
     imprimir_tabela(
         ranking(registros, "habitantes_por_ubs", reverso=True),
         campos=["municipio", "ubs", "populacao_atendida", "habitantes_por_ubs"],
-        limite=10,
+        limite=LIMITE_RANKING_TELA,
     )
 
     print("\nMaior populacao atendida")
     imprimir_tabela(
         ranking(registros, "populacao_atendida", reverso=True),
         campos=["municipio", "populacao_atendida", "ubs", "total_profissionais"],
-        limite=10,
+        limite=LIMITE_RANKING_TELA,
     )
 
 
@@ -432,54 +398,38 @@ def mostrar_consultas(registros):
     imprimir_tabela(municipios_encontrados, limite=30)
 
 
-def linhas_analise_exploratoria(registros):
-    """Cria as linhas de texto da analise exploratoria da base."""
-    linhas_analise = []
-    linhas_analise.append("=== Analise exploratoria dos dados ===")
-    linhas_analise.append(f"Quantidade de registros: {len(registros)}")
-    linhas_analise.append(f"Quantidade de colunas: {len(registros[0]) if registros else 0}")
-    linhas_analise.append("")
-
+def resumir_base(registros):
+    """Calcula um resumo simples da base para manter o relatorio curto."""
+    resumo = {
+        "quantidade_registros": len(registros),
+        "quantidade_colunas": len(registros[0]) if registros else 0,
+        "municipios_repetidos": 0,
+        "valores_ausentes": 0,
+    }
     if not registros:
-        return linhas_analise
+        return resumo
 
-    # Compara a lista de municipios com um set para descobrir nomes duplicados.
     nomes_municipios = []
     for registro in registros:
         nomes_municipios.append(registro.get("municipio"))
-    municipios_repetidos = len(nomes_municipios) - len(set(nomes_municipios))
-    linhas_analise.append(f"Municipios repetidos: {municipios_repetidos}")
-    linhas_analise.append("")
+        for valor_da_coluna in registro.values():
+            if valor_da_coluna in ("", None):
+                resumo["valores_ausentes"] += 1
 
-    linhas_analise.append("Valores ausentes por coluna:")
-    for nome_coluna in registros[0]:
-        # Considera vazio quando o valor e string vazia ou None.
-        valores_ausentes = 0
-        for registro in registros:
-            if registro.get(nome_coluna) in ("", None):
-                valores_ausentes += 1
-        linhas_analise.append(f"- {nome_coluna}: {valores_ausentes}")
+    resumo["municipios_repetidos"] = len(nomes_municipios) - len(set(nomes_municipios))
+    return resumo
 
-    linhas_analise.append("")
-    linhas_analise.append("Colunas numericas e intervalos:")
-    for nome_coluna in colunas_numericas(registros):
-        # Reaproveita apenas os valores numericos para evitar erro em min, max e media.
-        valores_da_coluna = valores_numericos(registros, nome_coluna)
-        linhas_analise.append(
-            f"- {nome_coluna}: minimo {valor_formatado(min(valores_da_coluna))}, "
-            f"maximo {valor_formatado(max(valores_da_coluna))}, "
-            f"media {valor_formatado(mean(valores_da_coluna))}"
-        )
 
-    linhas_analise.append("")
-    linhas_analise.append("Filtros recomendados para a dashboard:")
-    linhas_analise.append("- municipio: busca textual por nome.")
-    linhas_analise.append("- faixa_populacao: compara municipios por porte de atendimento.")
-    linhas_analise.append("- nivel_ubs: identifica pressao sobre a estrutura de UBS.")
-    linhas_analise.append("- nivel_medicos_10k: identifica disponibilidade medica relativa.")
-    linhas_analise.append("- habitantes_por_ubs e medicos_por_10k: bons campos para ranking.")
-
-    return linhas_analise
+def linhas_resumo_base(registros):
+    """Cria uma secao curta com as informacoes principais da base."""
+    resumo = resumir_base(registros)
+    return [
+        "=== Resumo da base ===",
+        f"Registros analisados: {resumo['quantidade_registros']}",
+        f"Colunas disponiveis: {resumo['quantidade_colunas']}",
+        f"Municipios repetidos: {resumo['municipios_repetidos']}",
+        f"Valores ausentes no total: {resumo['valores_ausentes']}",
+    ]
 
 
 def gerar_descobertas(registros):
@@ -487,29 +437,37 @@ def gerar_descobertas(registros):
     if not registros:
         return ["Nao ha dados carregados."]
 
-    # Calcula os principais extremos e medias uma vez para montar as frases finais.
     total_municipios = len(registros)
     total_populacao_atendida = 0
     municipios_com_baixa_disponibilidade_medica = 0
     municipios_com_baixa_disponibilidade_ubs = 0
+    soma_ubs = 0
+    soma_medicos_10k = 0
+    municipio_maior_populacao = registros[0]
+    municipio_menor_indicador_medicos = registros[0]
+    municipio_maior_pressao_ubs = registros[0]
 
     for registro in registros:
         total_populacao_atendida += registro["populacao_atendida"]
+        soma_ubs += registro["ubs"]
+        soma_medicos_10k += registro["medicos_por_10k"]
+
         if registro["nivel_medicos_10k"] == "Baixa disponibilidade":
             municipios_com_baixa_disponibilidade_medica += 1
         if registro["nivel_ubs"] == "Baixa disponibilidade":
             municipios_com_baixa_disponibilidade_ubs += 1
 
-    municipio_maior_populacao = ranking(registros, "populacao_atendida")[0]
-    municipio_maior_equipe = ranking(registros, "total_profissionais")[0]
-    municipio_menor_indicador_medicos = ranking(registros, "medicos_por_10k", reverso=False)[0]
-    municipio_maior_pressao_ubs = ranking(registros, "habitantes_por_ubs")[0]
-    media_ubs = mean(valores_numericos(registros, "ubs"))
-    media_medicos_10k = mean(valores_numericos(registros, "medicos_por_10k"))
-    faixa_mais_frequente = frequencia(registros, "faixa_populacao")[0]
-    melhor_faixa_medicos = agrupar_media(registros, "faixa_populacao", "medicos_por_10k")[0]
+        if registro["populacao_atendida"] > municipio_maior_populacao["populacao_atendida"]:
+            municipio_maior_populacao = registro
+        if registro["medicos_por_10k"] < municipio_menor_indicador_medicos["medicos_por_10k"]:
+            municipio_menor_indicador_medicos = registro
+        if registro["habitantes_por_ubs"] > municipio_maior_pressao_ubs["habitantes_por_ubs"]:
+            municipio_maior_pressao_ubs = registro
 
-    # A funcao devolve textos prontos para uso no terminal e no relatorio.
+    media_ubs = dividir(soma_ubs, total_municipios)
+    media_medicos_10k = dividir(soma_medicos_10k, total_municipios)
+    faixa_mais_frequente = frequencia(registros, "faixa_populacao")[0]
+
     descobertas = []
     descobertas.append(
         f"A base possui {total_municipios} municipios e soma "
@@ -534,10 +492,6 @@ def gerar_descobertas(registros):
         f"({valor_formatado(municipio_maior_populacao['populacao_atendida'])} pessoas)."
     )
     descobertas.append(
-        f"O municipio com maior equipe de saude e {municipio_maior_equipe['municipio']} "
-        f"({valor_formatado(municipio_maior_equipe['total_profissionais'])} profissionais)."
-    )
-    descobertas.append(
         f"O menor indicador de medicos por 10 mil habitantes aparece em "
         f"{municipio_menor_indicador_medicos['municipio']} "
         f"({valor_formatado(municipio_menor_indicador_medicos['medicos_por_10k'])})."
@@ -550,10 +504,6 @@ def gerar_descobertas(registros):
         f"A faixa de populacao mais frequente e '{faixa_mais_frequente['categoria']}', "
         f"com {faixa_mais_frequente['frequencia']} municipios "
         f"({valor_formatado(faixa_mais_frequente['percentual'])}%)."
-    )
-    descobertas.append(
-        f"A faixa '{melhor_faixa_medicos[0]}' possui a maior media de medicos por 10 mil "
-        f"habitantes ({valor_formatado(melhor_faixa_medicos[1])})."
     )
     return descobertas
 
@@ -575,30 +525,25 @@ def mostrar_estatisticas(registros):
 def linhas_estatisticas(registros):
     """Cria as linhas de texto da secao de estatisticas do relatorio."""
     linhas_estatisticas_relatorio = []
-    linhas_estatisticas_relatorio.append("=== Estatisticas Gerais ===")
+    linhas_estatisticas_relatorio.append("=== Indicadores principais ===")
     linhas_estatisticas_relatorio.append(f"Quantidade de registros: {len(registros)}")
 
     for nome_coluna in CAMPOS_BASE:
         estatisticas = estatisticas_coluna(registros, nome_coluna)
         if not estatisticas:
             continue
-        linhas_estatisticas_relatorio.append("")
-        linhas_estatisticas_relatorio.append(nome_coluna)
-        linhas_estatisticas_relatorio.append(f"- Soma: {valor_formatado(estatisticas['soma'])}")
-        linhas_estatisticas_relatorio.append(f"- Media: {valor_formatado(estatisticas['media'])}")
-        linhas_estatisticas_relatorio.append(f"- Mediana: {valor_formatado(estatisticas['mediana'])}")
-        linhas_estatisticas_relatorio.append(f"- Minimo: {valor_formatado(estatisticas['minimo'])}")
-        linhas_estatisticas_relatorio.append(f"- Maximo: {valor_formatado(estatisticas['maximo'])}")
+        linhas_estatisticas_relatorio.append(
+            f"- {nome_coluna}: soma {valor_formatado(estatisticas['soma'])}, "
+            f"media {valor_formatado(estatisticas['media'])}"
+        )
 
     linhas_estatisticas_relatorio.append("")
-    linhas_estatisticas_relatorio.append("Indicadores derivados")
-    for nome_coluna in CAMPOS_INDICADORES:
+    linhas_estatisticas_relatorio.append("Indicadores proporcionais")
+    for nome_coluna in CAMPOS_INDICADORES_RELATORIO:
         estatisticas = estatisticas_coluna(registros, nome_coluna)
         if estatisticas:
             linhas_estatisticas_relatorio.append(
-                f"- {nome_coluna}: media {valor_formatado(estatisticas['media'])}, "
-                f"minimo {valor_formatado(estatisticas['minimo'])}, "
-                f"maximo {valor_formatado(estatisticas['maximo'])}"
+                f"- {nome_coluna}: media {valor_formatado(estatisticas['media'])}"
             )
 
     return linhas_estatisticas_relatorio
@@ -620,12 +565,18 @@ def linhas_distribuicao(registros):
 
 def linhas_rankings(registros):
     """Cria as linhas de texto com os rankings do relatorio."""
-    linhas_rankings_relatorio = ["=== Ranking ==="]
+    linhas_rankings_relatorio = [f"=== Rankings principais - Top {LIMITE_RANKING_RELATORIO} ==="]
 
     for titulo, nome_coluna, reverso in RANKINGS_RELATORIO:
         linhas_rankings_relatorio.append("")
         linhas_rankings_relatorio.append(titulo)
-        for posicao, registro in enumerate(ranking(registros, nome_coluna, reverso=reverso), start=1):
+        registros_ranking = ranking(
+            registros,
+            nome_coluna,
+            reverso=reverso,
+            limite=LIMITE_RANKING_RELATORIO,
+        )
+        for posicao, registro in enumerate(registros_ranking, start=1):
             linhas_rankings_relatorio.append(
                 f"{posicao:02d}. {registro['municipio']} - "
                 f"{nome_coluna}: {valor_formatado(registro[nome_coluna])}"
@@ -651,7 +602,7 @@ def gerar_relatorio(registros, caminho_saida, caminho_csv):
     linhas_relatorio.append("e nao substituem parametros oficiais de saude publica.")
     linhas_relatorio.append("")
 
-    linhas_relatorio.extend(linhas_analise_exploratoria(registros))
+    linhas_relatorio.extend(linhas_resumo_base(registros))
     linhas_relatorio.append("")
     linhas_relatorio.extend(linhas_estatisticas(registros))
     linhas_relatorio.append("")

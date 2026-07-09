@@ -101,10 +101,10 @@ reports/relatorio_saude.txt
 O relatorio contem:
 
 - cabecalho;
-- analise exploratoria dos dados;
-- estatisticas gerais;
+- resumo da base;
+- indicadores principais;
 - distribuicoes;
-- rankings importantes;
+- rankings importantes em Top 5;
 - descobertas sobre os dados.
 
 ## Gerar relatorio sem abrir o menu

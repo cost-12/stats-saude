@@ -156,12 +156,6 @@ Calcula estatisticas de uma coluna numerica:
 
 Retorna um dicionario com esses resultados.
 
-### `colunas_numericas(registros)`
-
-Verifica quais colunas possuem valores numericos.
-
-E usada na analise exploratoria do relatorio para listar intervalos das colunas numericas.
-
 ### `frequencia(registros, nome_coluna)`
 
 Conta quantas vezes cada categoria aparece em uma coluna.
@@ -181,21 +175,6 @@ Ordena os registros por uma coluna.
 Quando `reverso=True`, mostra os maiores valores primeiro.
 
 Quando `reverso=False`, mostra os menores valores primeiro.
-
-### `agrupar_media(registros, categoria, nome_coluna)`
-
-Agrupa os registros por uma categoria e calcula a media de uma coluna numerica.
-
-Exemplo:
-
-- agrupar por `faixa_populacao`;
-- calcular a media de `medicos_por_10k`.
-
-### `pegar_media_do_grupo(grupo_com_media)`
-
-Funcao auxiliar usada para ordenar os grupos pela media calculada.
-
-Ela recebe uma tupla criada por `agrupar_media()` e retorna a media.
 
 ## Tabelas no terminal
 
@@ -281,11 +260,18 @@ Ela chama:
 
 ## Relatorio TXT
 
-### `linhas_analise_exploratoria(registros)`
+### `resumir_base(registros)`
 
-Cria uma lista de linhas de texto com a Analise Exploratoria de Dados.
+Calcula um resumo curto da base:
 
-Ela e usada no relatorio.
+- quantidade de registros;
+- quantidade de colunas;
+- municipios repetidos;
+- total de valores ausentes.
+
+### `linhas_resumo_base(registros)`
+
+Cria as linhas de texto da secao resumida da base no relatorio.
 
 ### `linhas_estatisticas(registros)`
 
@@ -306,10 +292,10 @@ Gera o arquivo TXT final.
 Ele junta:
 
 - cabecalho;
-- analise exploratoria dos dados;
-- estatisticas;
+- resumo da base;
+- indicadores principais;
 - distribuicoes;
-- rankings;
+- rankings principais em Top 5;
 - descobertas sobre os dados.
 
 ## Entrada do programa
