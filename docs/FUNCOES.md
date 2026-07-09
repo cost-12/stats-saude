@@ -168,6 +168,12 @@ Conta quantas vezes cada categoria aparece em uma coluna.
 
 Tambem calcula o percentual de cada categoria.
 
+### `pegar_frequencia(item)`
+
+Funcao auxiliar usada para ordenar os itens de frequencia.
+
+Ela recebe um dicionario e retorna o valor da chave `frequencia`.
+
 ### `ranking(dados, campo, reverso=True, limite=10)`
 
 Ordena os registros por uma coluna.
@@ -185,7 +191,19 @@ Exemplo:
 - agrupar por `faixa_populacao`;
 - calcular a media de `medicos_por_10k`.
 
+### `pegar_media_do_grupo(item)`
+
+Funcao auxiliar usada para ordenar os grupos pela media calculada.
+
+Ela recebe uma tupla criada por `agrupar_media()` e retorna a media.
+
 ## Tabelas no terminal
+
+### `cortar_texto(texto, limite=28)`
+
+Corta textos muito longos e adiciona `...` no final.
+
+Ela ajuda a manter a tabela legivel no terminal.
 
 ### `texto_tabela(registros, campos=None, limite=20)`
 

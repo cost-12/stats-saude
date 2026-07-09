@@ -12,11 +12,12 @@ O projeto usa apenas bibliotecas padrao do Python:
 
 - `argparse`
 - `csv`
-- `collections`
 - `datetime`
 - `pathlib`
 - `statistics`
-- `textwrap`
+
+O codigo foi mantido com lacos `for` explicitos e funcoes pequenas para ficar
+mais facil de acompanhar por quem esta aprendendo Python.
 
 ## Executar a dashboard
 

@@ -46,11 +46,12 @@ O projeto usa apenas Python e bibliotecas padrao:
 
 - `argparse`
 - `csv`
-- `collections`
 - `datetime`
 - `pathlib`
 - `statistics`
-- `textwrap`
+
+O codigo evita recursos muito avancados e prefere lacos `for` explicitos para
+facilitar o estudo por iniciantes em Python.
 
 ## Estrutura do projeto
 

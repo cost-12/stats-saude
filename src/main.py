@@ -7,11 +7,9 @@ Foi escrito apenas com bibliotecas padrao do Python para facilitar o estudo.
 # from import foi usado pois permite importar apenas as funções necessárias de um módulo, sem poluir o namespace com vários arquivos.
 import argparse
 import csv
-from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 from statistics import mean, median
-from textwrap import shorten
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -177,11 +175,12 @@ def percentual(parte, total):
 
 def valores_numericos(dados, campo):
     """Pega apenas os valores numericos de uma coluna."""
-    return [
-        registro[campo]
-        for registro in dados
-        if isinstance(registro.get(campo), (int, float)) and registro.get(campo) != ""
-    ]
+    valores = []
+    for registro in dados:
+        valor = registro.get(campo)
+        if isinstance(valor, (int, float)):
+            valores.append(valor)
+    return valores
 
 
 def estatisticas_coluna(dados, campo):
@@ -207,42 +206,79 @@ def colunas_numericas(dados):
 
     colunas = []
     for campo in dados[0]:
-        if any(isinstance(registro.get(campo), (int, float)) for registro in dados):
+        encontrou_numero = False
+        for registro in dados:
+            if isinstance(registro.get(campo), (int, float)):
+                encontrou_numero = True
+                break
+
+        if encontrou_numero:
             colunas.append(campo)
     return colunas
 
 
 def frequencia(dados, campo):
     """Conta frequencia e percentual de cada categoria em uma coluna."""
-    contador = Counter(registro.get(campo, "Nao informado") for registro in dados)
+    contador = {}
+    for registro in dados:
+        categoria = registro.get(campo, "Nao informado")
+        contador[categoria] = contador.get(categoria, 0) + 1
+
     total = len(dados)
-    return [
-        {
+    itens = []
+    for categoria, qtd in contador.items():
+        item = {
             "categoria": categoria,
             "frequencia": qtd,
             "percentual": percentual(qtd, total),
         }
-        for categoria, qtd in contador.most_common()
-    ]
+        itens.append(item)
+
+    return sorted(itens, key=pegar_frequencia, reverse=True)
+
+
+def pegar_frequencia(item):
+    """Retorna a frequencia de um item para ajudar na ordenacao."""
+    return item["frequencia"]
 
 
 def ranking(dados, campo, reverso=True, limite=10):
     """Ordena os registros por um campo e retorna os primeiros colocados."""
-    return sorted(dados, key=lambda registro: registro.get(campo, 0), reverse=reverso)[:limite]
+    def pegar_valor(registro):
+        return registro.get(campo, 0)
+
+    dados_ordenados = sorted(dados, key=pegar_valor, reverse=reverso)
+    return dados_ordenados[:limite]
 
 
 def agrupar_media(dados, categoria, campo):
     """Agrupa registros por categoria e calcula a media de um campo numerico."""
-    grupos = defaultdict(list)
+    grupos = {}
     for registro in dados:
         valor = registro.get(campo)
         if isinstance(valor, (int, float)):
-            grupos[registro.get(categoria, "Nao informado")].append(valor)
+            nome_grupo = registro.get(categoria, "Nao informado")
+            if nome_grupo not in grupos:
+                grupos[nome_grupo] = []
+            grupos[nome_grupo].append(valor)
 
     medias = []
     for nome_grupo, valores in grupos.items():
         medias.append((nome_grupo, mean(valores), len(valores)))
-    return sorted(medias, key=lambda item: item[1], reverse=True)
+    return sorted(medias, key=pegar_media_do_grupo, reverse=True)
+
+
+def pegar_media_do_grupo(item):
+    """Retorna a media guardada na tupla criada por agrupar_media."""
+    return item[1]
+
+
+def cortar_texto(texto, limite=28):
+    """Corta textos muito longos para nao quebrar a tabela."""
+    texto = str(texto)
+    if len(texto) <= limite:
+        return texto
+    return texto[: limite - 3] + "..."
 
 
 def texto_tabela(registros, campos=None, limite=20):
@@ -256,35 +292,46 @@ def texto_tabela(registros, campos=None, limite=20):
 
     # Primeiro os valores sao formatados como texto para calcular a largura das colunas.
     for registro in registros_exibidos:
-        linhas.append(
-            {
-                campo: shorten(valor_formatado(registro.get(campo, "")), width=28, placeholder="...")
-                for campo in campos
-            }
-        )
+        linha = {}
+        for campo in campos:
+            valor = valor_formatado(registro.get(campo, ""))
+            linha[campo] = cortar_texto(valor)
+        linhas.append(linha)
 
     # A largura de cada coluna respeita o maior texto encontrado, com limite de 28.
-    larguras = {
-        campo: min(
-            28,
-            max(len(campo), *(len(str(linha[campo])) for linha in linhas)),
-        )
-        for campo in campos
-    }
+    larguras = {}
+    for campo in campos:
+        maior_largura = len(campo)
+        for linha in linhas:
+            largura_texto = len(str(linha[campo]))
+            if largura_texto > maior_largura:
+                maior_largura = largura_texto
+        larguras[campo] = min(28, maior_largura)
 
     # Cabecalho, separador e corpo sao montados separadamente para formar a tabela final.
-    cabecalho = " | ".join(campo.ljust(larguras[campo]) for campo in campos)
-    separador = "-+-".join("-" * larguras[campo] for campo in campos)
-    corpo = [
-        " | ".join(str(linha[campo]).ljust(larguras[campo]) for campo in campos)
-        for linha in linhas
-    ]
+    partes_cabecalho = []
+    partes_separador = []
+    for campo in campos:
+        partes_cabecalho.append(campo.ljust(larguras[campo]))
+        partes_separador.append("-" * larguras[campo])
+
+    cabecalho = " | ".join(partes_cabecalho)
+    separador = "-+-".join(partes_separador)
+
+    corpo = []
+    for linha in linhas:
+        partes_linha = []
+        for campo in campos:
+            partes_linha.append(str(linha[campo]).ljust(larguras[campo]))
+        corpo.append(" | ".join(partes_linha))
 
     rodape = ""
     if len(registros) > limite:
         rodape = f"\nMostrando {limite} de {len(registros)} registros."
 
-    return "\n".join([cabecalho, separador, *corpo]) + rodape
+    tabela = [cabecalho, separador]
+    tabela.extend(corpo)
+    return "\n".join(tabela) + rodape
 
 
 def imprimir_tabela(registros, campos=None, limite=20):
@@ -335,11 +382,12 @@ def mostrar_distribuicoes(dados):
 def buscar_municipios_por_nome(dados, termo):
     """Retorna municipios que possuem o termo informado no nome."""
     termo = termo.strip().lower()
-    return [
-        registro
-        for registro in dados
-        if termo in str(registro.get("municipio", "")).lower()
-    ]
+    encontrados = []
+    for registro in dados:
+        municipio = str(registro.get("municipio", "")).lower()
+        if termo in municipio:
+            encontrados.append(registro)
+    return encontrados
 
 
 def mostrar_municipios_prioritarios(dados):
@@ -396,7 +444,9 @@ def linhas_analise_exploratoria(dados):
         return linhas
 
     # Compara a lista de municipios com um set para descobrir nomes duplicados.
-    municipios = [registro.get("municipio") for registro in dados]
+    municipios = []
+    for registro in dados:
+        municipios.append(registro.get("municipio"))
     repetidos = len(municipios) - len(set(municipios))
     linhas.append(f"Municipios repetidos: {repetidos}")
     linhas.append("")
@@ -404,7 +454,10 @@ def linhas_analise_exploratoria(dados):
     linhas.append("Valores ausentes por coluna:")
     for campo in dados[0]:
         # Considera vazio quando o valor e string vazia ou None.
-        ausentes = sum(1 for registro in dados if registro.get(campo) in ("", None))
+        ausentes = 0
+        for registro in dados:
+            if registro.get(campo) in ("", None):
+                ausentes += 1
         linhas.append(f"- {campo}: {ausentes}")
 
     linhas.append("")
@@ -436,63 +489,69 @@ def gerar_descobertas(dados):
 
     # Calcula os principais extremos e medias uma vez para montar as frases finais.
     total = len(dados)
-    total_populacao = sum(registro["populacao_atendida"] for registro in dados)
-    maior_populacao = max(dados, key=lambda registro: registro["populacao_atendida"])
-    maior_equipe = max(dados, key=lambda registro: registro["total_profissionais"])
-    menor_medicos = min(dados, key=lambda registro: registro["medicos_por_10k"])
-    maior_pressao_ubs = max(dados, key=lambda registro: registro["habitantes_por_ubs"])
-    media_ubs = mean(registro["ubs"] for registro in dados)
-    media_medicos_10k = mean(registro["medicos_por_10k"] for registro in dados)
+    total_populacao = 0
+    baixa_medicos = 0
+    baixa_ubs = 0
 
-    # Listas filtradas permitem calcular percentuais por classificacao.
-    baixa_medicos = [
-        registro for registro in dados if registro["nivel_medicos_10k"] == "Baixa disponibilidade"
-    ]
-    baixa_ubs = [
-        registro for registro in dados if registro["nivel_ubs"] == "Baixa disponibilidade"
-    ]
+    for registro in dados:
+        total_populacao += registro["populacao_atendida"]
+        if registro["nivel_medicos_10k"] == "Baixa disponibilidade":
+            baixa_medicos += 1
+        if registro["nivel_ubs"] == "Baixa disponibilidade":
+            baixa_ubs += 1
+
+    maior_populacao = ranking(dados, "populacao_atendida")[0]
+    maior_equipe = ranking(dados, "total_profissionais")[0]
+    menor_medicos = ranking(dados, "medicos_por_10k", reverso=False)[0]
+    maior_pressao_ubs = ranking(dados, "habitantes_por_ubs")[0]
+    media_ubs = mean(valores_numericos(dados, "ubs"))
+    media_medicos_10k = mean(valores_numericos(dados, "medicos_por_10k"))
     faixa_mais_frequente = frequencia(dados, "faixa_populacao")[0]
     melhor_faixa_medicos = agrupar_media(dados, "faixa_populacao", "medicos_por_10k")[0]
 
     # A funcao devolve textos prontos para uso no terminal e no relatorio.
-    return [
-        f"A base possui {total} municipios e soma {valor_formatado(total_populacao)} pessoas atendidas.",
-        f"A media geral e de {valor_formatado(media_ubs)} UBS por municipio.",
-        f"A media de medicos por 10 mil habitantes e {valor_formatado(media_medicos_10k)}.",
-        (
-            f"{valor_formatado(percentual(len(baixa_medicos), total))}% dos municipios "
-            "estao em baixa disponibilidade medica pela classificacao interna."
-        ),
-        (
-            f"{valor_formatado(percentual(len(baixa_ubs), total))}% dos municipios "
-            "tem baixa disponibilidade de UBS pela relacao habitantes por unidade."
-        ),
-        (
-            f"O municipio com maior populacao atendida e {maior_populacao['municipio']} "
-            f"({valor_formatado(maior_populacao['populacao_atendida'])} pessoas)."
-        ),
-        (
-            f"O municipio com maior equipe de saude e {maior_equipe['municipio']} "
-            f"({valor_formatado(maior_equipe['total_profissionais'])} profissionais)."
-        ),
-        (
-            f"O menor indicador de medicos por 10 mil habitantes aparece em "
-            f"{menor_medicos['municipio']} ({valor_formatado(menor_medicos['medicos_por_10k'])})."
-        ),
-        (
-            f"A maior pressao sobre UBS aparece em {maior_pressao_ubs['municipio']}, "
-            f"com {valor_formatado(maior_pressao_ubs['habitantes_por_ubs'])} habitantes por UBS."
-        ),
-        (
-            f"A faixa de populacao mais frequente e '{faixa_mais_frequente['categoria']}', "
-            f"com {faixa_mais_frequente['frequencia']} municipios "
-            f"({valor_formatado(faixa_mais_frequente['percentual'])}%)."
-        ),
-        (
-            f"A faixa '{melhor_faixa_medicos[0]}' possui a maior media de medicos por 10 mil "
-            f"habitantes ({valor_formatado(melhor_faixa_medicos[1])})."
-        ),
-    ]
+    descobertas = []
+    descobertas.append(
+        f"A base possui {total} municipios e soma {valor_formatado(total_populacao)} pessoas atendidas."
+    )
+    descobertas.append(f"A media geral e de {valor_formatado(media_ubs)} UBS por municipio.")
+    descobertas.append(
+        f"A media de medicos por 10 mil habitantes e {valor_formatado(media_medicos_10k)}."
+    )
+    descobertas.append(
+        f"{valor_formatado(percentual(baixa_medicos, total))}% dos municipios "
+        "estao em baixa disponibilidade medica pela classificacao interna."
+    )
+    descobertas.append(
+        f"{valor_formatado(percentual(baixa_ubs, total))}% dos municipios "
+        "tem baixa disponibilidade de UBS pela relacao habitantes por unidade."
+    )
+    descobertas.append(
+        f"O municipio com maior populacao atendida e {maior_populacao['municipio']} "
+        f"({valor_formatado(maior_populacao['populacao_atendida'])} pessoas)."
+    )
+    descobertas.append(
+        f"O municipio com maior equipe de saude e {maior_equipe['municipio']} "
+        f"({valor_formatado(maior_equipe['total_profissionais'])} profissionais)."
+    )
+    descobertas.append(
+        f"O menor indicador de medicos por 10 mil habitantes aparece em "
+        f"{menor_medicos['municipio']} ({valor_formatado(menor_medicos['medicos_por_10k'])})."
+    )
+    descobertas.append(
+        f"A maior pressao sobre UBS aparece em {maior_pressao_ubs['municipio']}, "
+        f"com {valor_formatado(maior_pressao_ubs['habitantes_por_ubs'])} habitantes por UBS."
+    )
+    descobertas.append(
+        f"A faixa de populacao mais frequente e '{faixa_mais_frequente['categoria']}', "
+        f"com {faixa_mais_frequente['frequencia']} municipios "
+        f"({valor_formatado(faixa_mais_frequente['percentual'])}%)."
+    )
+    descobertas.append(
+        f"A faixa '{melhor_faixa_medicos[0]}' possui a maior media de medicos por 10 mil "
+        f"habitantes ({valor_formatado(melhor_faixa_medicos[1])})."
+    )
+    return descobertas
 
 
 def mostrar_descobertas(dados):
@@ -577,32 +636,34 @@ def gerar_relatorio(dados, caminho_saida, caminho_csv):
     caminho_saida.parent.mkdir(parents=True, exist_ok=True)
     agora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-    # O operador * inclui todas as linhas retornadas pelas funcoes auxiliares.
-    linhas = [
-        "=" * 72,
-        "RELATORIO DA DASHBOARD DE SAUDE",
-        "=" * 72,
-        f"Gerado em: {agora}",
-        f"Base analisada: {caminho_csv}",
-        "",
-        "Observacao: classificacoes de disponibilidade sao operacionais para analise exploratoria",
-        "e nao substituem parametros oficiais de saude publica.",
-        "",
-        *linhas_analise_exploratoria(dados),
-        "",
-        *linhas_estatisticas(dados),
-        "",
-        *linhas_distribuicao(dados),
-        "",
-        *linhas_rankings(dados),
-        "",
-        "=== Descobertas sobre os dados ===",
-        *(f"- {descoberta}" for descoberta in gerar_descobertas(dados)),
-        "",
-        "=" * 72,
-        "FIM DO RELATORIO",
-        "=" * 72,
-    ]
+    linhas = []
+    linhas.append("=" * 72)
+    linhas.append("RELATORIO DA DASHBOARD DE SAUDE")
+    linhas.append("=" * 72)
+    linhas.append(f"Gerado em: {agora}")
+    linhas.append(f"Base analisada: {caminho_csv}")
+    linhas.append("")
+    linhas.append("Observacao: classificacoes de disponibilidade sao operacionais para analise exploratoria")
+    linhas.append("e nao substituem parametros oficiais de saude publica.")
+    linhas.append("")
+
+    linhas.extend(linhas_analise_exploratoria(dados))
+    linhas.append("")
+    linhas.extend(linhas_estatisticas(dados))
+    linhas.append("")
+    linhas.extend(linhas_distribuicao(dados))
+    linhas.append("")
+    linhas.extend(linhas_rankings(dados))
+    linhas.append("")
+
+    linhas.append("=== Descobertas sobre os dados ===")
+    for descoberta in gerar_descobertas(dados):
+        linhas.append(f"- {descoberta}")
+
+    linhas.append("")
+    linhas.append("=" * 72)
+    linhas.append("FIM DO RELATORIO")
+    linhas.append("=" * 72)
 
     caminho_saida.write_text("\n".join(linhas), encoding="utf-8")
     return caminho_saida
