@@ -76,6 +76,20 @@ Calcula e exibe informacoes uteis do dataset:
 - maximo;
 - media, mediana, menor e maior valor.
 
+Cada resultado informa o que o número representa. Por exemplo:
+
+```text
+ENFERMEIROS
+  Total de enfermeiros na base: 15.007,00
+  Media de enfermeiros por municipio: 75,03
+  Mediana de enfermeiros por municipio: 73,50
+  Menor quantidade em um municipio: 2,00
+  Maior quantidade em um municipio: 150,00
+```
+
+O total considera todos os municípios. A média, a mediana, o menor e o maior
+valor representam a quantidade encontrada por município.
+
 Exemplos de indicadores derivados:
 
 - `medicos_por_10k`

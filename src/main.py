@@ -11,6 +11,14 @@ ARQUIVO_RELATORIO = PASTA_PROJETO / "reports" / "relatorio_saude.txt"
 
 COLUNAS_NUMERICAS = ["ubs", "medicos", "enfermeiros", "populacao_atendida"]
 
+# Nomes mais faceis de entender quando as estatisticas aparecem na tela.
+NOMES_COLUNAS = {
+    "ubs": "UBS",
+    "medicos": "medicos",
+    "enfermeiros": "enfermeiros",
+    "populacao_atendida": "pessoas atendidas",
+}
+
 
 
 # seção de leitura dos dados
@@ -144,12 +152,14 @@ def mostrar_estatisticas(municipios):
         for municipio in municipios:
             valores.append(municipio[coluna])
 
-        print(f"\n{coluna}")
-        print(f"  Soma:    {formatar_numero(sum(valores))}")
-        print(f"  Media:   {formatar_numero(mean(valores))}")
-        print(f"  Mediana: {formatar_numero(median(valores))}")
-        print(f"  Menor:   {formatar_numero(min(valores))}")
-        print(f"  Maior:   {formatar_numero(max(valores))}")
+        nome = NOMES_COLUNAS[coluna]
+
+        print(f"\n{nome.upper()}")
+        print(f"  Total de {nome} na base: {formatar_numero(sum(valores))}")
+        print(f"  Media de {nome} por municipio: {formatar_numero(mean(valores))}")
+        print(f"  Mediana de {nome} por municipio: {formatar_numero(median(valores))}")
+        print(f"  Menor quantidade em um municipio: {formatar_numero(min(valores))}")
+        print(f"  Maior quantidade em um municipio: {formatar_numero(max(valores))}")
 
 
 def gerar_relatorio(municipios):

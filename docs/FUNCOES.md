@@ -51,7 +51,9 @@ Mostra tres rankings e oferece uma busca pelo nome do municipio.
 
 ### `mostrar_estatisticas(municipios)`
 
-Mostra soma, media, mediana, menor valor e maior valor de cada coluna numerica.
+Mostra total, media, mediana, menor valor e maior valor de cada coluna numerica.
+Os textos exibidos também explicam a unidade e se o resultado representa toda a
+base ou um município.
 
 ### `gerar_relatorio(municipios)`
 
