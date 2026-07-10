@@ -1,321 +1,84 @@
-# Referencia das Funcoes
+# Funcoes do Programa
 
-Este arquivo explica, de forma simples, para que serve cada funcao de
-`src/main.py`.
+O arquivo `src/main.py` foi dividido em quatro blocos. As linhas compridas de
+tracos ajudam o aluno a enxergar onde cada assunto comeca.
 
-## Fluxo geral
+## 1. Leitura e preparacao
 
-O programa segue esta ordem:
+### `dividir(numero, divisor)`
 
-1. `main()` define o CSV padrao do projeto.
-2. `carregar_dados()` abre o CSV.
-3. Cada linha do CSV vira um dicionario.
-4. `adicionar_indicadores()` cria informacoes calculadas.
-5. `menu_principal()` mostra o menu unico com consultas, estatisticas e relatorio.
+Faz uma divisao. Se o divisor for zero, devolve `0` e evita um erro.
 
-## Constantes
+### `calcular_indicadores(municipio)`
 
-### `BASE_DIR`
+Recebe o dicionario de um municipio e acrescenta somente tres calculos:
 
-Guarda o caminho da pasta raiz do projeto.
+- total de profissionais;
+- medicos por 10 mil habitantes;
+- habitantes por UBS.
 
-### `CSV_PADRAO`
+### `carregar_dados(caminho)`
 
-Guarda o caminho padrao do CSV: `data/08_saude.csv`.
+Abre o CSV com `csv.DictReader`. Cada linha vira um dicionario e cada coluna
+numerica e convertida com `int()`.
 
-### `RELATORIO_PADRAO`
+Todos os dicionarios sao guardados na lista `municipios`.
 
-Guarda o caminho padrao do relatorio: `reports/relatorio_saude.txt`.
+## 2. Funcoes de apoio
 
-### `CAMPOS_BASE`
+### `formatar_numero(numero)`
 
-Lista os campos originais que recebem estatisticas principais:
+Prepara um numero para aparecer com duas casas decimais e virgula.
 
-- `ubs`
-- `medicos`
-- `enfermeiros`
-- `populacao_atendida`
+### `mostrar_tabela(municipios)`
 
-### `CAMPOS_INDICADORES`
+Usa um laco `for` para imprimir os municipios em forma de tabela.
 
-Lista os campos calculados pelo programa, como `medicos_por_10k` e
-`habitantes_por_ubs`.
+### `buscar_municipio(municipios, nome_procurado)`
 
-### `CAMPOS_TABELA`
+Compara o texto digitado com o nome de cada municipio e cria uma lista com os
+resultados encontrados.
 
-Define quais colunas aparecem na tabela padrao do terminal.
+### `criar_ranking(municipios, coluna, ordem_decrescente)`
 
-### `CAMPOS_CATEGORICOS_ANALISE`
+Ordena a lista pela coluna escolhida e devolve os cinco primeiros municipios.
 
-Define as categorias usadas nas distribuicoes:
+## 3. Opcoes do menu
 
-- `faixa_populacao`
-- `nivel_ubs`
-- `nivel_medicos_10k`
+### `mostrar_consultas(municipios)`
 
-### `RANKINGS_RELATORIO`
+Mostra tres rankings e oferece uma busca pelo nome do municipio.
 
-Define quais rankings aparecem automaticamente no relatorio TXT.
+### `mostrar_estatisticas(municipios)`
 
-### `CONSULTAS_PRIORITARIAS`
+Mostra soma, media, mediana, menor valor e maior valor de cada coluna numerica.
 
-Define os rankings mostrados na opcao `Consultas` do menu.
+### `gerar_relatorio(municipios)`
 
-## Conversao e calculos basicos
+Cria `reports/relatorio_saude.txt` com as medias e um ranking curto.
 
-### `converter_valor(valor)`
+## 4. Inicio do programa
 
-Recebe um valor lido do CSV.
+### `mostrar_menu(municipios)`
 
-Tenta converter esse valor para numero. Se conseguir, retorna `int` ou `float`.
-Se nao conseguir, retorna o texto original.
-
-### `dividir(numerador, denominador)`
-
-Faz uma divisao.
-
-Se o denominador for zero, vazio ou nulo, retorna `0` para evitar erro.
-
-### `percentual(parte, total)`
-
-Calcula o percentual que uma parte representa de um total.
-
-### `valor_formatado(valor)`
-
-Formata numeros para exibicao no padrao brasileiro.
-
-Exemplos:
-
-- `1500` vira `1.500`
-- `12.5` vira `12,50`
-
-## Categorias e indicadores de saude
-
-### `categorizar_populacao(populacao)`
-
-Classifica a populacao atendida em faixas:
-
-- ate 100 mil
-- 100 mil a 199 mil
-- 200 mil a 299 mil
-- 300 mil ou mais
-
-### `categorizar_ubs(habitantes_por_ubs)`
-
-Classifica a disponibilidade de UBS conforme a quantidade de habitantes por
-unidade.
-
-### `categorizar_medicos(medicos_por_10k)`
-
-Classifica a disponibilidade medica usando a quantidade de medicos por 10 mil
-habitantes.
-
-### `adicionar_indicadores(registro)`
-
-Recebe um dicionario com os dados de um municipio e adiciona novos campos
-calculados.
-
-Exemplos de campos adicionados:
-
-- `total_profissionais`
-- `medicos_por_10k`
-- `habitantes_por_ubs`
-- `faixa_populacao`
-- `nivel_ubs`
-- `nivel_medicos_10k`
-
-## Leitura dos dados
-
-### `carregar_dados(caminho_csv)`
-
-Abre o arquivo CSV e le todas as linhas.
-
-Para cada linha:
-
-- cria um dicionario;
-- converte valores numericos;
-- adiciona indicadores calculados;
-- adiciona o dicionario na lista `registros_municipios`.
-
-No final, retorna uma lista de dicionarios.
-
-## Estatisticas e organizacao dos dados
-
-### `valores_numericos(registros, nome_coluna)`
-
-Recebe a lista de registros e o nome de uma coluna.
-
-Retorna apenas os valores numericos dessa coluna.
-
-### `estatisticas_coluna(registros, nome_coluna)`
-
-Calcula estatisticas de uma coluna numerica:
-
-- quantidade;
-- soma;
-- media;
-- mediana;
-- minimo;
-- maximo.
-
-Retorna um dicionario com esses resultados.
-
-### `frequencia(registros, nome_coluna)`
-
-Conta quantas vezes cada categoria aparece em uma coluna.
-
-Tambem calcula o percentual de cada categoria.
-
-### `ranking(registros, nome_coluna, reverso=True, limite=10)`
-
-Ordena os registros por uma coluna.
-
-Quando `reverso=True`, mostra os maiores valores primeiro.
-
-Quando `reverso=False`, mostra os menores valores primeiro.
-
-## Tabelas no terminal
-
-### `cortar_texto(texto, limite=28)`
-
-Corta textos muito longos e adiciona `...` no final.
-
-Ela ajuda a manter a tabela legivel no terminal.
-
-### `texto_tabela(registros, campos=None, limite=20)`
-
-Monta uma tabela em formato de texto.
-
-Ela nao imprime sozinha. Apenas retorna o texto pronto.
-
-## Consultas
-
-### `buscar_municipios_por_nome(registros, texto_busca)`
-
-Procura municipios cujo nome contem o termo digitado.
-
-Retorna uma lista de registros encontrados.
-
-### `mostrar_municipios_prioritarios(registros)`
-
-Mostra consultas prontas para localizar municipios que merecem atencao:
-
-- menor disponibilidade de medicos por 10 mil habitantes;
-- maior numero de habitantes por UBS;
-- maior populacao atendida.
-
-### `mostrar_consultas(registros)`
-
-Executa a opcao `Consultas` do menu principal.
-
-Ela mostra os municipios prioritarios e permite uma busca simples por nome.
-
-## Estatisticas no terminal
-
-### `mostrar_estatisticas_gerais(registros)`
-
-Mostra no terminal:
-
-- quantidade de registros;
-- soma;
-- media;
-- mediana;
-- minimo;
-- maximo;
-- indicadores derivados.
-
-### `mostrar_distribuicoes(registros)`
-
-Mostra frequencia e percentual das categorias da analise exploratoria.
-
-### `gerar_descobertas(registros)`
-
-Cria frases com informacoes relevantes sobre a base.
-
-Exemplos:
-
-- municipio com maior populacao atendida;
-- media de UBS por municipio;
-- percentual de municipios com baixa disponibilidade medica.
-
-### `mostrar_descobertas(registros)`
-
-Imprime no terminal as frases criadas por `gerar_descobertas()`.
-
-### `mostrar_estatisticas(registros)`
-
-Executa a opcao `Estatisticas` do menu principal.
-
-Ela chama:
-
-- `mostrar_estatisticas_gerais()`;
-- `mostrar_distribuicoes()`;
-- `mostrar_descobertas()`.
-
-## Relatorio TXT
-
-### `resumir_base(registros)`
-
-Calcula um resumo curto da base:
-
-- quantidade de registros;
-- quantidade de colunas;
-- municipios repetidos;
-- total de valores ausentes.
-
-### `linhas_resumo_base(registros)`
-
-Cria as linhas de texto da secao resumida da base no relatorio.
-
-### `linhas_estatisticas(registros)`
-
-Cria as linhas de texto da secao de estatisticas do relatorio.
-
-### `linhas_distribuicao(registros)`
-
-Cria as linhas de texto da secao de distribuicao, frequencia e percentual.
-
-### `linhas_rankings(registros)`
-
-Cria as linhas de texto da secao de rankings do relatorio.
-
-### `gerar_relatorio(registros, caminho_saida, caminho_csv)`
-
-Gera o arquivo TXT final.
-
-Ele junta:
-
-- cabecalho;
-- resumo da base;
-- indicadores principais;
-- distribuicoes;
-- rankings principais em Top 5;
-- descobertas sobre os dados.
-
-## Entrada do programa
-
-### `menu_principal(registros, caminho_csv)`
-
-Controla o menu unico da dashboard.
-
-Opcoes disponiveis:
-
-- `Consultas`;
-- `Estatisticas`;
-- `Relatorio TXT`.
+Mostra as opcoes dentro de um `while`. O laco termina quando a opcao e `0`.
 
 ### `main()`
 
-E a funcao principal do programa.
+Confere se o CSV existe, carrega os municipios e chama o menu.
 
-Ela:
+O bloco abaixo inicia o programa quando executamos `src/main.py`:
 
-- usa o CSV padrao `data/08_saude.csv`;
-- verifica se o CSV existe;
-- carrega os dados;
-- abre o menu principal.
+```python
+if __name__ == "__main__":
+    main()
+```
 
-### `if __name__ == "__main__":`
+## Caminho percorrido pelos dados
 
-Esse bloco garante que `main()` seja chamada quando o arquivo `main.py` for
-executado diretamente pelo terminal.
+```text
+CSV -> carregar_dados() -> lista de municipios -> menu
+                                              -> consultas
+                                              -> estatisticas
+                                              -> relatorio
+```

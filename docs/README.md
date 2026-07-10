@@ -1,99 +1,37 @@
 # Dashboard de Saude
 
-Este projeto e uma dashboard simples feita em Python, sem interface grafica.
-Ela le a base `data/08_saude.csv`, transforma cada linha em um dicionario e
-guarda todos os registros em uma lista.
+Este projeto foi organizado para apresentar Python a estudantes iniciantes. Ele
+lê `data/08_saude.csv` e guarda os dados em uma lista de dicionários.
 
-O objetivo e permitir consultas e analises uteis sobre dados de saude usando
-apenas o terminal.
+## Conceitos praticados
 
-## Estrutura do projeto
+- variáveis e constantes;
+- listas e dicionários;
+- conversão com `int()`;
+- decisões com `if` e `elif`;
+- repetições com `for` e `while`;
+- criação e chamada de funções;
+- leitura e escrita de arquivos.
 
-```text
-stats-saude/
-+-- data/
-|   +-- 08_saude.csv
-+-- docs/
-|   +-- README.md
-|   +-- USO.md
-|   +-- FUNCOES.md
-|   +-- CSV.md
-+-- reports/
-|   +-- relatorio_saude.txt
-+-- src/
-    +-- main.py
-```
+## Organização de `main.py`
 
-## Arquivos principais
+O código possui quatro seções, separadas por linhas visíveis:
 
-- `src/main.py`: codigo principal da dashboard.
-- `data/08_saude.csv`: base de dados analisada.
-- `reports/relatorio_saude.txt`: relatorio gerado pela dashboard.
-- `docs/USO.md`: explica como executar e usar o menu.
-- `docs/FUNCOES.md`: explica para que serve cada funcao do codigo.
-- `docs/CSV.md`: explica como a biblioteca `csv` e usada no projeto.
+1. leitura e preparação dos dados;
+2. funções de apoio;
+3. opções do menu;
+4. menu e início do programa.
 
-## Dados utilizados
+O programa calcula apenas três indicadores: total de profissionais, médicos por
+10 mil habitantes e habitantes por UBS. Essa quantidade reduzida permite que o
+aluno acompanhe cada fórmula.
 
-A base possui as seguintes colunas originais:
+## Arquivos de apoio
 
-- `municipio`: nome do municipio.
-- `ubs`: quantidade de UBS.
-- `medicos`: quantidade de medicos.
-- `enfermeiros`: quantidade de enfermeiros.
-- `populacao_atendida`: populacao atendida no municipio.
+- `USO.md`: como executar e usar o menu;
+- `FUNCOES.md`: explicação de cada função;
+- `CSV.md`: explicação da biblioteca `csv`.
+- `PATHLIB.md`: explicação de caminhos e da classe `Path`.
 
-Durante a execucao, o programa cria novas colunas calculadas, como:
-
-- `total_profissionais`
-- `profissionais_por_ubs`
-- `medicos_por_10k`
-- `enfermeiros_por_10k`
-- `profissionais_por_10k`
-- `habitantes_por_ubs`
-- `habitantes_por_medico`
-- `habitantes_por_profissional`
-- `faixa_populacao`
-- `nivel_ubs`
-- `nivel_medicos_10k`
-
-## Como os dados ficam na memoria
-
-O programa usa uma lista de dicionarios. Cada dicionario representa uma linha do
-CSV.
-
-Exemplo simplificado:
-
-```python
-[
-    {
-        "municipio": "Sao Paulo",
-        "ubs": 25,
-        "medicos": 82,
-        "enfermeiros": 148,
-        "populacao_atendida": 188675,
-        "total_profissionais": 230,
-        "medicos_por_10k": 4.35,
-    }
-]
-```
-
-Esse formato facilita buscas por municipio, rankings e calculos estatisticos.
-
-## O que a dashboard faz
-
-- Carrega dados do CSV.
-- Converte numeros automaticamente.
-- Calcula indicadores de saude.
-- Exibe estatisticas gerais.
-- Mostra distribuicoes, frequencias e percentuais.
-- Gera rankings com municipios prioritarios para analise.
-- Permite consultas por municipio e por prioridades de atendimento.
-- Mostra descobertas sobre os dados.
-- Gera um arquivo TXT estruturado com os principais resultados.
-
-## Observacao importante
-
-As classificacoes como `Alta disponibilidade`, `Disponibilidade media` e
-`Baixa disponibilidade` sao criterios internos para facilitar a analise
-exploratoria. Elas nao substituem parametros oficiais de saude publica.
+As análises servem para aprendizagem e exploração dos dados. Elas não substituem
+parâmetros oficiais de saúde pública.

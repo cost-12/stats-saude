@@ -14,7 +14,7 @@ A biblioteca e importada em `src/main.py`:
 import csv
 ```
 
-Ela e usada dentro da funcao `carregar_dados(caminho_csv)`.
+Ela e usada dentro da funcao `carregar_dados(caminho)`.
 
 ## Por que usar `csv.DictReader`
 
@@ -51,8 +51,8 @@ Depois da leitura com `DictReader`, essa linha fica parecida com:
 }
 ```
 
-No CSV, os valores chegam como texto. Por isso o projeto chama
-`converter_valor()` para transformar numeros em `int` ou `float`.
+No CSV, os valores chegam como texto. Por isso o programa percorre as colunas
+numericas e usa `int()` para transformar cada valor em numero inteiro.
 
 ## Fluxo da leitura
 
@@ -61,22 +61,21 @@ A funcao `carregar_dados()` segue esta ordem:
 1. Abre o arquivo CSV.
 2. Cria um leitor com `csv.DictReader`.
 3. Percorre cada linha do arquivo.
-4. Cria um dicionario chamado `registro`.
-5. Converte cada valor com `converter_valor()`.
-6. Adiciona indicadores com `adicionar_indicadores()`.
-7. Guarda o registro na lista `registros_municipios`.
+4. Converte as colunas numericas com `int()`.
+5. Adiciona tres indicadores com `calcular_indicadores()`.
+6. Guarda o dicionario na lista `municipios`.
 
 Trecho principal:
 
 ```python
-with caminho_csv.open("r", encoding="utf-8-sig", newline="") as arquivo:
+with caminho.open(encoding="utf-8-sig") as arquivo:
     leitor = csv.DictReader(arquivo)
-    for linha_csv in leitor:
-        registro = {}
-        for nome_coluna_csv, valor_csv in linha_csv.items():
-            registro[nome_coluna_csv.strip()] = converter_valor(valor_csv)
-        adicionar_indicadores(registro)
-        registros_municipios.append(registro)
+    for linha in leitor:
+        for coluna in COLUNAS_NUMERICAS:
+            linha[coluna] = int(linha[coluna])
+
+        calcular_indicadores(linha)
+        municipios.append(linha)
 ```
 
 ## Detalhes importantes
@@ -85,28 +84,6 @@ with caminho_csv.open("r", encoding="utf-8-sig", newline="") as arquivo:
 
 Esse formato ajuda a ler arquivos CSV salvos em UTF-8 com BOM. Isso evita que o
 primeiro nome de coluna venha com caracteres escondidos.
-
-### `newline=""`
-
-Esse parametro e recomendado pela documentacao do Python ao trabalhar com
-arquivos CSV. Ele ajuda a evitar problemas de quebra de linha em sistemas
-diferentes, como Windows e Linux.
-
-### `nome_coluna_csv.strip()`
-
-O `strip()` remove espacos extras no nome da coluna.
-
-Exemplo:
-
-```python
-" municipio ".strip()
-```
-
-Resultado:
-
-```python
-"municipio"
-```
 
 ## Formato esperado do CSV
 
@@ -123,6 +100,9 @@ O arquivo padrao do projeto e:
 ```text
 data/08_saude.csv
 ```
+
+As quatro colunas numericas devem conter inteiros sem separadores. Por exemplo,
+use `188675`, e nao `188.675` ou `188,675`.
 
 ## Por que os dados viram lista de dicionarios
 

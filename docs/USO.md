@@ -14,8 +14,8 @@ O projeto usa apenas bibliotecas padrao do Python:
 - `pathlib`
 - `statistics`
 
-O codigo foi mantido com lacos `for` explicitos e funcoes pequenas para ficar
-mais facil de acompanhar por quem esta aprendendo Python.
+O codigo usa principalmente `int`, listas, dicionarios, `for`, `if` e funcoes.
+As secoes do arquivo possuem separadores visuais para facilitar a leitura.
 
 ## Executar a dashboard
 
@@ -40,7 +40,7 @@ O projeto possui apenas um menu:
 ```text
 1. Consultas
 2. Estatisticas
-3. Relatorio TXT
+3. Criar relatorio TXT
 0. Sair
 ```
 
@@ -74,19 +74,13 @@ Calcula e exibe informacoes uteis do dataset:
 - mediana;
 - minimo;
 - maximo;
-- indicadores derivados de saude;
-- distribuicao por categoria;
-- frequencia por categoria;
-- percentual por categoria;
-- descobertas sobre os dados.
+- media, mediana, menor e maior valor.
 
 Exemplos de indicadores derivados:
 
 - `medicos_por_10k`
-- `enfermeiros_por_10k`
-- `profissionais_por_10k`
 - `habitantes_por_ubs`
-- `habitantes_por_medico`
+- `total_profissionais`
 
 ## Opcao 3: Relatorio TXT
 
@@ -96,14 +90,8 @@ Gera ou atualiza o arquivo:
 reports/relatorio_saude.txt
 ```
 
-O relatorio contem:
-
-- cabecalho;
-- resumo da base;
-- indicadores principais;
-- distribuicoes;
-- rankings importantes em Top 5;
-- descobertas sobre os dados.
+O relatorio contem um cabecalho, as medias gerais e os cinco municipios com
+menos medicos por 10 mil habitantes.
 
 O programa usa sempre o CSV padrao do projeto. Esse CSV deve ter as colunas
 esperadas:
