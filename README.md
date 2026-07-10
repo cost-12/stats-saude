@@ -1,10 +1,10 @@
 # Stats Saude
 
-Dashboard didática em Python que analisa dados de saúde pelo terminal. O foco é
-apresentar conceitos iniciais para estudantes: variáveis, listas, dicionários,
+Dashboard para análisa de dados de saúde, focado em
+apresentar conceitos variáveis, listas, dicionários,
 condições, laços e funções.
 
-O projeto usa apenas bibliotecas que acompanham o Python: `csv`, `pathlib` e
+O projeto usa apenas bibliotecas: `csv`, `pathlib` e
 `statistics`.
 
 ## O que o programa faz
@@ -13,7 +13,7 @@ O projeto usa apenas bibliotecas que acompanham o Python: `csv`, `pathlib` e
 - converte textos para números com `int()`;
 - calcula três indicadores de saúde;
 - mostra rankings e busca por município;
-- calcula estatísticas simples;
+- calcula estatísticas;
 - cria um relatório TXT.
 
 ## Estrutura
@@ -66,14 +66,3 @@ O programa acrescenta somente estes indicadores:
 - `habitantes_por_ubs`.
 
 Os dados numéricos do CSV devem ser números inteiros, sem pontos ou vírgulas.
-
-## Documentação
-
-- [Guia de uso](docs/USO.md)
-- [Explicação das funções](docs/FUNCOES.md)
-- [Explicação da leitura do CSV](docs/CSV.md)
-- [Explicação da biblioteca pathlib](docs/PATHLIB.md)
-
-## Licença
-
-Este projeto está licenciado sob a GPLv3. Consulte [LICENSE](LICENSE).

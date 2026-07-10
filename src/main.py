@@ -1,5 +1,3 @@
-"""Dashboard de saude feita com conceitos iniciais de Python."""
-
 import csv
 from pathlib import Path
 from statistics import mean, median
